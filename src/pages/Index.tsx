@@ -3,15 +3,14 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Header } from "@/components/presentation/Header";
 import { BackgroundDecorations } from "@/components/presentation/BackgroundDecorations";
 import { NavigationControls } from "@/components/presentation/NavigationControls";
-import { ProgressBar } from "@/components/presentation/ProgressBar";
 import { Slide } from "@/components/presentation/Slide";
 
 // Import all slide components
 import { SlideIntro } from "@/components/presentation/slides/SlideIntro";
 import { SlideFlujoOperativo } from "@/components/presentation/slides/SlideFlujoOperativo";
-import { SlideReglasNegocio } from "@/components/presentation/slides/SlideReglasNegocio";
+import { SlideReglasNegocioNew } from "@/components/presentation/slides/SlideReglasNegocioNew";
 import { SlideAnalisisRiesgos } from "@/components/presentation/slides/SlideAnalisisRiesgos";
-import { SlideMacroProcesosComerciales } from "@/components/presentation/slides/SlideMacroProcesosComerciales";
+import { SlideProcesosFlow } from "@/components/presentation/slides/SlideProcesosFlow";
 import { SlideFormalizacion } from "@/components/presentation/slides/SlideFormalizacion";
 import { SlideAdminActivos } from "@/components/presentation/slides/SlideAdminActivos";
 import { SlideCobranza } from "@/components/presentation/slides/SlideCobranza";
@@ -21,21 +20,21 @@ import { SlideReestructuras } from "@/components/presentation/slides/SlideReestr
 import { SlideReportes } from "@/components/presentation/slides/SlideReportes";
 import { SlideClosing } from "@/components/presentation/slides/SlideClosing";
 
-// Slide configuration with components
+// Slide configuration with components and labels
 const slides = [
-  { id: 0, component: SlideIntro },
-  { id: 1, component: SlideFlujoOperativo },
-  { id: 2, component: SlideReglasNegocio },
-  { id: 3, component: SlideAnalisisRiesgos },
-  { id: 4, component: SlideMacroProcesosComerciales },
-  { id: 5, component: SlideFormalizacion },
-  { id: 6, component: SlideAdminActivos },
-  { id: 7, component: SlideCobranza },
-  { id: 8, component: SlideSeguros },
-  { id: 9, component: SlideOpcionCompra },
-  { id: 10, component: SlideReestructuras },
-  { id: 11, component: SlideReportes },
-  { id: 12, component: SlideClosing },
+  { id: 0, component: SlideIntro, label: "Inicio" },
+  { id: 1, component: SlideFlujoOperativo, label: "Flujo" },
+  { id: 2, component: SlideReglasNegocioNew, label: "Reglas" },
+  { id: 3, component: SlideAnalisisRiesgos, label: "Riesgos" },
+  { id: 4, component: SlideProcesosFlow, label: "Procesos" },
+  { id: 5, component: SlideFormalizacion, label: "Formalización" },
+  { id: 6, component: SlideAdminActivos, label: "Activos" },
+  { id: 7, component: SlideCobranza, label: "Cobranza" },
+  { id: 8, component: SlideSeguros, label: "Seguros" },
+  { id: 9, component: SlideOpcionCompra, label: "Compra" },
+  { id: 10, component: SlideReestructuras, label: "Reestructuras" },
+  { id: 11, component: SlideReportes, label: "Reportes" },
+  { id: 12, component: SlideClosing, label: "Cierre" },
 ];
 
 const Index = () => {
@@ -202,11 +201,61 @@ const Index = () => {
         </AnimatePresence>
       </main>
 
-      <ProgressBar
-        currentSlide={currentSlide}
-        totalSlides={totalSlides}
-        onSlideClick={goToSlide}
-      />
+      {/* Enhanced Progress Bar with labels */}
+      <motion.div
+        className="fixed bottom-0 left-0 right-0 z-50"
+        initial={{ y: 100 }}
+        animate={{ y: 0 }}
+        transition={{ delay: 0.5 }}
+      >
+        {/* Progress line */}
+        <div className="relative h-1 bg-muted mx-16">
+          <motion.div
+            className="absolute left-0 top-0 h-full bg-primary"
+            initial={{ width: "0%" }}
+            animate={{ width: `${(currentSlide / (totalSlides - 1)) * 100}%` }}
+            transition={{ duration: 0.3 }}
+          />
+        </div>
+
+        {/* Dots with labels */}
+        <div className="flex justify-between items-start px-4 py-4">
+          {slides.map((slide, index) => {
+            const isActive = index === currentSlide;
+            const isPast = index < currentSlide;
+            
+            return (
+              <button
+                key={slide.id}
+                onClick={() => goToSlide(index)}
+                className="flex flex-col items-center gap-2 group"
+              >
+                <motion.div
+                  className={`w-3 h-3 rounded-full transition-all ${
+                    isActive 
+                      ? "bg-primary scale-150 shadow-lg" 
+                      : isPast 
+                        ? "bg-primary/60" 
+                        : "bg-muted-foreground/30"
+                  }`}
+                  whileHover={{ scale: 1.5 }}
+                  animate={isActive ? { 
+                    boxShadow: ["0 0 0 0 rgba(196, 33, 38, 0.4)", "0 0 0 10px rgba(196, 33, 38, 0)", "0 0 0 0 rgba(196, 33, 38, 0)"] 
+                  } : {}}
+                  transition={isActive ? { duration: 1.5, repeat: Infinity } : {}}
+                />
+                <span className={`text-[10px] font-medium transition-all ${
+                  isActive 
+                    ? "text-primary" 
+                    : "text-muted-foreground opacity-0 group-hover:opacity-100"
+                }`}>
+                  {slide.label}
+                </span>
+              </button>
+            );
+          })}
+        </div>
+      </motion.div>
     </div>
   );
 };
