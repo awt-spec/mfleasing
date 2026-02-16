@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Users, Search, FileText, ClipboardList, BarChart3, CheckCircle, FileCheck, Handshake, TrendingUp, UserCheck, Briefcase, Target, Phone, MessageSquare, Calendar, DollarSign, Receipt, Shield, Pencil, Workflow, MousePointerClick, ArrowDown, ArrowRight, Settings2, Calculator, Percent, Clock } from "lucide-react";
+import { Users, Search, FileText, ClipboardList, BarChart3, CheckCircle, FileCheck, TrendingUp, UserCheck, Target, DollarSign, Receipt, Shield, Pencil, Workflow, MousePointerClick, ArrowDown, Settings2, Calculator, Plus, Layers, Table, FolderOpen, CreditCard, User, Calendar, Banknote, Clock, CircleDot, ArrowRight, SlidersHorizontal } from "lucide-react";
 import { CategoryCard } from "../CategoryCard";
 import { SubzoomHeader } from "../SubzoomHeader";
 import { CategoryLegend } from "../CategoryLegend";
@@ -31,32 +31,32 @@ const processes = [
     iconBg: "bg-blue-100 dark:bg-blue-900/30",
     iconColor: "text-blue-600 dark:text-blue-400",
     title: "Cotización",
-    description: "Generación de propuestas comerciales",
+    description: "Flujo ajustable por reglas de negocio",
     buttonColor: "bg-gradient-to-r from-blue-500 to-blue-600",
     itemCount: 5,
-    tag: "Diagrama experto",
+    tag: "Configurable",
     tags: [
       { icon: DollarSign, label: "Precio" },
       { icon: Calendar, label: "Plazos" },
-      { icon: FileText, label: "Condiciones" },
+      { icon: SlidersHorizontal, label: "Reglas" },
       { icon: CheckCircle, label: "Aprobación" },
     ],
   },
   {
-    id: "formalizacion",
-    icon: Handshake,
+    id: "lineas",
+    icon: CreditCard,
     iconBg: "bg-emerald-100 dark:bg-emerald-900/30",
     iconColor: "text-emerald-600 dark:text-emerald-400",
-    title: "Formalización",
-    description: "Cierre y firma de contratos",
+    title: "Líneas de Crédito",
+    description: "Configuración y gestión de líneas",
     buttonColor: "bg-gradient-to-r from-emerald-500 to-emerald-600",
-    itemCount: 4,
-    tag: "Diagrama de flujo",
+    itemCount: 8,
+    tag: "Flujo",
     tags: [
-      { icon: FileCheck, label: "Contrato" },
-      { icon: Shield, label: "Garantías" },
-      { icon: Briefcase, label: "Activos" },
-      { icon: TrendingUp, label: "Activación" },
+      { icon: User, label: "Persona" },
+      { icon: Banknote, label: "Monto" },
+      { icon: Calendar, label: "Fechas" },
+      { icon: CircleDot, label: "Estado" },
     ],
   },
 ];
@@ -64,134 +64,125 @@ const processes = [
 const legendItems = [
   { color: "bg-amber-500", label: "Originación" },
   { color: "bg-blue-500", label: "Cotización" },
-  { color: "bg-emerald-500", label: "Formalización" },
+  { color: "bg-emerald-500", label: "Líneas de Crédito" },
 ];
 
-// Originación: No-code workflow builder visual
+// ---- ORIGINACIÓN: Collections table + adaptable section ----
 const OriginacionView = () => (
   <motion.div
-    className="p-6 rounded-3xl bg-card border border-border shadow-lg"
+    className="space-y-4"
     initial={{ opacity: 0, y: 20 }}
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.2 }}
   >
-    {/* No-code badge */}
-    <div className="flex items-center justify-between mb-5">
-      <div className="flex items-center gap-2">
+    {/* Workflow nodes */}
+    <div className="p-6 rounded-2xl bg-card border border-border shadow-sm">
+      <div className="flex items-center gap-2 mb-4">
         <Workflow className="w-5 h-5 text-amber-500" />
-        <span className="text-sm font-bold text-foreground">Workflow Builder</span>
-      </div>
-      <motion.span
-        className="px-3 py-1 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-[10px] font-bold rounded-full"
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 2, repeat: Infinity }}
-      >
-        NO-CODE
-      </motion.span>
-    </div>
-
-    {/* Visual workflow canvas */}
-    <div className="bg-muted/30 rounded-xl border-2 border-dashed border-border p-4 relative">
-      {/* Toolbar mock */}
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-border/50">
-        <div className="flex gap-1.5">
-          {["bg-red-400", "bg-amber-400", "bg-emerald-400"].map(c => (
-            <div key={c} className={`w-2.5 h-2.5 rounded-full ${c}`} />
-          ))}
-        </div>
-        <span className="text-[10px] text-muted-foreground ml-2">Arrastra y suelta los pasos del proceso</span>
-        <div className="ml-auto flex gap-1">
-          <Pencil className="w-3 h-3 text-muted-foreground" />
-          <MousePointerClick className="w-3 h-3 text-muted-foreground" />
-        </div>
+        <span className="text-sm font-bold text-foreground">Flujo de Originación</span>
+        <motion.span
+          className="ml-auto px-2.5 py-0.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-[10px] font-bold rounded-full"
+          animate={{ scale: [1, 1.05, 1] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          NO-CODE
+        </motion.span>
       </div>
 
-      {/* Workflow nodes */}
-      <StaggerContainer className="flex flex-col items-center gap-1" staggerDelay={0.12} initialDelay={0.4}>
+      <StaggerContainer className="flex flex-col items-center gap-1" staggerDelay={0.1} initialDelay={0.3}>
         {[
-          { icon: UserCheck, label: "Contacto del prospecto", editable: true },
-          { icon: Search, label: "Identificación de necesidad", editable: true },
-          { icon: FileText, label: "Documentación del cliente", editable: true },
-          { icon: ClipboardList, label: "Recuperación SLA", editable: false },
+          { icon: UserCheck, label: "Contacto del prospecto" },
+          { icon: Search, label: "Identificación de necesidad" },
+          { icon: FileText, label: "Documentación del cliente" },
         ].map((step, i) => (
           <StaggerItem key={step.label} className="w-full flex flex-col items-center">
             <motion.div
-              className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm w-full max-w-xs group cursor-grab active:cursor-grabbing relative"
-              whileHover={{ scale: 1.02, boxShadow: "0 4px 20px rgba(0,0,0,0.1)" }}
+              className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-muted/50 border border-border w-full max-w-sm group cursor-grab"
+              whileHover={{ scale: 1.02 }}
             >
-              {/* Drag handle */}
               <div className="flex flex-col gap-0.5 opacity-30 group-hover:opacity-60">
                 <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-foreground" /><div className="w-1 h-1 rounded-full bg-foreground" /></div>
                 <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-foreground" /><div className="w-1 h-1 rounded-full bg-foreground" /></div>
-                <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-foreground" /><div className="w-1 h-1 rounded-full bg-foreground" /></div>
               </div>
-              <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
-                <step.icon className="w-4 h-4 text-amber-600" />
+              <div className="w-7 h-7 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                <step.icon className="w-3.5 h-3.5 text-amber-600" />
               </div>
-              <span className="text-xs font-semibold text-foreground flex-1">{step.label}</span>
-              {step.editable && (
-                <Pencil className="w-3 h-3 text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity" />
-              )}
+              <span className="text-xs font-semibold text-foreground">{step.label}</span>
+              <Pencil className="w-3 h-3 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
             </motion.div>
-            {i < 3 && (
-              <motion.div
-                className="my-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 0.4 }}
-                transition={{ delay: 0.6 + i * 0.1 }}
-              >
-                <ArrowDown className="w-3 h-3 text-muted-foreground" />
-              </motion.div>
-            )}
+            {i < 2 && <ArrowDown className="w-3 h-3 text-muted-foreground my-0.5 opacity-40" />}
           </StaggerItem>
         ))}
-
-        {/* Branch */}
-        <StaggerItem className="w-full flex flex-col items-center">
-          <div className="flex items-center gap-4 mt-1">
-            <motion.div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border shadow-sm cursor-grab"
-              whileHover={{ scale: 1.03 }}
-            >
-              <FileCheck className="w-4 h-4 text-amber-600" />
-              <span className="text-[10px] font-semibold">Datos de buró</span>
-            </motion.div>
-            <motion.div
-              className="flex items-center gap-2 px-3 py-2 rounded-lg bg-card border border-border shadow-sm cursor-grab"
-              whileHover={{ scale: 1.03 }}
-            >
-              <BarChart3 className="w-4 h-4 text-amber-600" />
-              <span className="text-[10px] font-semibold">Evaluación</span>
-            </motion.div>
-          </div>
-        </StaggerItem>
       </StaggerContainer>
-
-      {/* "Add step" button */}
-      <motion.div
-        className="flex justify-center mt-3"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-      >
-        <div className="px-3 py-1.5 rounded-lg border-2 border-dashed border-primary/30 text-primary text-[10px] font-semibold flex items-center gap-1 cursor-pointer hover:bg-primary/5 transition-colors">
-          + Agregar paso
-        </div>
-      </motion.div>
     </div>
 
-    <motion.p
-      className="text-[10px] text-center text-muted-foreground mt-3"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 0.7 }}
-      transition={{ delay: 1.3 }}
-    >
-      Personaliza cada paso del workflow sin necesidad de código
-    </motion.p>
+    {/* Collections table */}
+    <SubZoomContainer delay={0.7} direction="bottom">
+      <div className="p-5 rounded-2xl bg-card border-2 border-dashed border-border">
+        <div className="flex items-center gap-2 mb-3">
+          <Table className="w-4 h-4 text-foreground" />
+          <span className="text-sm font-bold text-foreground">Tabla de Colecciones</span>
+          <div className="ml-auto flex gap-1.5">
+            <div className="w-6 h-6 rounded-md bg-emerald-500/10 flex items-center justify-center"><Plus className="w-3 h-3 text-emerald-500" /></div>
+            <div className="w-6 h-6 rounded-md bg-blue-500/10 flex items-center justify-center"><Pencil className="w-3 h-3 text-blue-500" /></div>
+            <div className="w-6 h-6 rounded-md bg-red-500/10 flex items-center justify-center"><ClipboardList className="w-3 h-3 text-red-500" /></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-2">
+          {[
+            { label: "Colección", icon: SlidersHorizontal },
+            { label: "Cantidad", icon: SlidersHorizontal },
+            { label: "Descripción", icon: SlidersHorizontal },
+            { label: "Documentación", icon: FolderOpen },
+          ].map(field => (
+            <div key={field.label} className="flex items-center gap-2 px-3 py-2 rounded-lg bg-muted/30 border border-border/50">
+              <span className="text-xs font-medium text-foreground">{field.label}</span>
+              <field.icon className="w-3 h-3 text-muted-foreground ml-auto" />
+            </div>
+          ))}
+        </div>
+      </div>
+    </SubZoomContainer>
+
+    {/* Adaptable section */}
+    <SubZoomContainer delay={0.9} direction="bottom">
+      <div className="p-5 rounded-2xl bg-violet-500/5 border border-violet-300/30">
+        <div className="flex items-center gap-2 mb-3">
+          <Settings2 className="w-4 h-4 text-violet-500" />
+          <span className="text-sm font-bold text-foreground">Adaptable a cada Cliente</span>
+        </div>
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: Plus, label: "Agregar", desc: "Nuevos campos y colecciones", color: "text-emerald-500" },
+            { icon: Pencil, label: "Editar", desc: "Configurar flujos y reglas", color: "text-blue-500" },
+            { icon: Layers, label: "Organizar", desc: "Estados y transiciones", color: "text-amber-500" },
+          ].map(item => (
+            <motion.div
+              key={item.label}
+              className="p-3 rounded-xl bg-card border border-border text-center"
+              whileHover={{ y: -2, scale: 1.02 }}
+            >
+              <item.icon className={`w-5 h-5 ${item.color} mx-auto mb-1`} />
+              <span className="text-xs font-bold text-foreground block">{item.label}</span>
+              <span className="text-[10px] text-muted-foreground">{item.desc}</span>
+            </motion.div>
+          ))}
+        </div>
+        <motion.div
+          className="mt-3 px-4 py-2 rounded-lg bg-violet-500/10 text-center"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          <span className="text-violet-600 text-xs font-bold">Sin código</span>
+          <span className="text-xs text-muted-foreground"> — Diseña el workflow perfecto para tu operación</span>
+        </motion.div>
+      </div>
+    </SubZoomContainer>
   </motion.div>
 );
 
-// Cotización: Expert diagram view
+// ---- COTIZACIÓN: Flow with adjustable rules ----
 const CotizacionView = () => (
   <motion.div
     className="p-6 rounded-3xl bg-card border border-border shadow-lg"
@@ -199,102 +190,184 @@ const CotizacionView = () => (
     animate={{ opacity: 1, y: 0 }}
     transition={{ delay: 0.2 }}
   >
-    <div className="flex items-center gap-2 mb-5">
-      <Calculator className="w-5 h-5 text-blue-500" />
-      <span className="text-sm font-bold text-foreground">Motor de Cotización</span>
-    </div>
-
-    {/* Expert diagram: horizontal flow with detail cards */}
-    <div className="grid grid-cols-1 md:grid-cols-5 gap-3">
-      {[
-        { icon: Target, label: "Condiciones", items: ["Tipo de activo", "Moneda", "Plazo"], color: "border-blue-400", iconColor: "text-blue-500", bg: "bg-blue-500/5" },
-        { icon: Calculator, label: "Cálculo de Rentas", items: ["Tasa", "Residual", "Comisiones"], color: "border-blue-500", iconColor: "text-blue-600", bg: "bg-blue-500/10" },
-        { icon: Percent, label: "Análisis Financiero", items: ["TIR", "VPN", "Spread"], color: "border-indigo-400", iconColor: "text-indigo-500", bg: "bg-indigo-500/5" },
-        { icon: FileText, label: "Propuesta", items: ["PDF", "Tabla amort.", "Comparativa"], color: "border-purple-400", iconColor: "text-purple-500", bg: "bg-purple-500/5" },
-        { icon: CheckCircle, label: "Aprobación", items: ["Cliente", "Comité", "Firma"], color: "border-emerald-400", iconColor: "text-emerald-500", bg: "bg-emerald-500/5" },
-      ].map((step, i) => (
-        <motion.div
-          key={step.label}
-          className={`relative p-3 rounded-xl ${step.bg} border-l-4 ${step.color}`}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 + i * 0.12 }}
-          whileHover={{ y: -3 }}
-        >
-          <div className="flex items-center gap-2 mb-2">
-            <step.icon className={`w-5 h-5 ${step.iconColor}`} />
-            <span className="text-xs font-bold text-foreground">{step.label}</span>
-          </div>
-          <ul className="space-y-1">
-            {step.items.map(item => (
-              <li key={item} className="text-[10px] text-muted-foreground flex items-center gap-1">
-                <div className="w-1 h-1 rounded-full bg-muted-foreground/40" />
-                {item}
-              </li>
-            ))}
-          </ul>
-          {/* Step number */}
-          <div className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-blue-500 text-white text-[10px] font-bold flex items-center justify-center shadow">
-            {i + 1}
-          </div>
-        </motion.div>
-      ))}
-    </div>
-
-    {/* Connecting arrows (visual only) */}
-    <motion.div
-      className="flex items-center justify-center gap-1 mt-3"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 0.5 }}
-      transition={{ delay: 1.0 }}
-    >
-      {[1, 2, 3, 4].map(i => (
-        <div key={i} className="flex items-center">
-          <div className="w-12 h-px bg-blue-400/40" />
-          <ArrowRight className="w-3 h-3 text-blue-400/40" />
-        </div>
-      ))}
-    </motion.div>
-
-    <motion.div
-      className="flex items-center justify-center gap-2 mt-3"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay: 1.1 }}
-    >
-      <Clock className="w-3 h-3 text-muted-foreground" />
-      <span className="text-[10px] text-muted-foreground">Generación automática de tabla de amortización con múltiples escenarios</span>
-    </motion.div>
-  </motion.div>
-);
-
-// Formalización: standard flow
-const FormalizacionView = () => (
-  <motion.div
-    className="p-8 rounded-3xl bg-card border border-border shadow-lg"
-    initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
-    transition={{ delay: 0.2 }}
-  >
     <div className="flex flex-col items-center">
       {[
-        { icon: FileCheck, title: "Generación de contrato", variant: "primary" as const },
-        { icon: Shield, title: "Registro de garantías", variant: "secondary" as const },
-        { icon: Briefcase, title: "Alta de activos", variant: "secondary" as const },
-        { icon: TrendingUp, title: "Activación de operación", variant: "accent" as const },
-      ].map((step, index, arr) => (
-        <FlowNode
-          key={step.title}
-          icon={step.icon}
-          title={step.title}
-          variant={step.variant}
-          delay={0.3 + index * 0.15}
-          showArrow={index < arr.length - 1}
-        />
+        { icon: Target, title: "Definir condiciones", variant: "primary" as const, rules: ["Tipo de activo", "Moneda", "Plazo"] },
+        { icon: Calculator, title: "Calcular rentas", variant: "primary" as const, rules: ["Tasa", "Valor residual", "Comisiones"] },
+        { icon: BarChart3, title: "Análisis financiero", variant: "secondary" as const, rules: ["TIR", "VPN", "Spread"] },
+        { icon: FileText, title: "Generar propuesta", variant: "accent" as const, rules: [] },
+        { icon: CheckCircle, title: "Aprobación del cliente", variant: "muted" as const, rules: [] },
+      ].map((step, i, arr) => (
+        <div key={step.title} className="flex flex-col items-center w-full">
+          <div className="flex items-center gap-4 w-full max-w-lg">
+            {/* Flow node */}
+            <div className="flex-1">
+              <FlowNode
+                icon={step.icon}
+                title={step.title}
+                variant={step.variant}
+                delay={0.3 + i * 0.12}
+                showArrow={false}
+              />
+            </div>
+            {/* Adjustable rules badge */}
+            {step.rules.length > 0 && (
+              <motion.div
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-blue-500/5 border border-blue-300/30"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + i * 0.12 }}
+              >
+                <SlidersHorizontal className="w-3 h-3 text-blue-500 flex-shrink-0" />
+                <div className="flex flex-col">
+                  {step.rules.map(r => (
+                    <span key={r} className="text-[10px] text-muted-foreground leading-tight">{r}</span>
+                  ))}
+                </div>
+              </motion.div>
+            )}
+          </div>
+          {i < arr.length - 1 && (
+            <motion.div
+              className="my-1"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ delay: 0.4 + i * 0.1 }}
+            >
+              <ArrowDown className="w-4 h-4 text-muted-foreground" />
+            </motion.div>
+          )}
+        </div>
       ))}
     </div>
+
+    <motion.div
+      className="flex items-center justify-center gap-2 mt-4 px-4 py-2 rounded-lg bg-muted/50"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ delay: 1.2 }}
+    >
+      <SlidersHorizontal className="w-3 h-3 text-primary" />
+      <span className="text-[10px] text-muted-foreground">Todos los parámetros son <span className="text-primary font-semibold">ajustables según las reglas de negocio</span> configuradas</span>
+    </motion.div>
   </motion.div>
 );
+
+// ---- LÍNEAS DE CRÉDITO: Vertical branching flow ----
+const LineasCreditoView = () => {
+  const steps = [
+    { label: "Configuración", icon: Settings2, isHeader: true },
+    { label: "Persona física o jurídica", icon: User },
+    { label: "Monto autorizado / disponible", icon: Banknote },
+    { label: "Periodicidad de pago", icon: Clock },
+  ];
+
+  const branches = [
+    { label: "Moneda", icon: DollarSign, side: "left" as const },
+    { label: "Fecha de apertura", icon: Calendar, side: "right" as const },
+  ];
+
+  const bottomSteps = [
+    { label: "Fecha de vencimiento", icon: Calendar, side: "left" as const },
+    { label: "Estado", icon: CircleDot, side: "right" as const },
+  ];
+
+  return (
+    <motion.div
+      className="p-6 rounded-3xl bg-card border border-border shadow-lg"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 }}
+    >
+      {/* Header badge */}
+      <motion.div
+        className="flex justify-center mb-4"
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.3 }}
+      >
+        <div className="px-4 py-2 bg-primary text-primary-foreground rounded-lg text-sm font-bold flex items-center gap-2">
+          <CreditCard className="w-4 h-4" />
+          Líneas de Crédito
+        </div>
+      </motion.div>
+
+      <div className="flex flex-col items-center">
+        {/* Linear steps */}
+        {steps.map((step, i) => (
+          <div key={step.label} className="flex flex-col items-center">
+            <motion.div
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl border shadow-sm ${
+                step.isHeader ? "bg-muted border-border" : "bg-card border-border"
+              }`}
+              initial={{ opacity: 0, y: -15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.4 + i * 0.12 }}
+              whileHover={{ scale: 1.03 }}
+            >
+              <step.icon className={`w-4 h-4 ${step.isHeader ? "text-foreground" : "text-emerald-500"}`} />
+              <span className="text-xs font-semibold text-foreground">{step.label}</span>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 0.4 }}
+              transition={{ delay: 0.5 + i * 0.12 }}
+            >
+              <ArrowDown className="w-3 h-3 text-muted-foreground my-1" />
+            </motion.div>
+          </div>
+        ))}
+
+        {/* Branch: Moneda ← → Fecha de apertura */}
+        <motion.div
+          className="flex items-start gap-6 mt-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.9 }}
+        >
+          {branches.map((b, i) => (
+            <motion.div
+              key={b.label}
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, x: b.side === "left" ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.0 + i * 0.1 }}
+            >
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm">
+                <b.icon className="w-4 h-4 text-emerald-500" />
+                <span className="text-xs font-semibold text-foreground">{b.label}</span>
+              </div>
+              <ArrowDown className="w-3 h-3 text-muted-foreground my-1 opacity-40" />
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Bottom branch: Fecha vencimiento ← → Estado */}
+        <motion.div
+          className="flex items-start gap-6 mt-1"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.2 }}
+        >
+          {bottomSteps.map((b, i) => (
+            <motion.div
+              key={b.label}
+              className="flex flex-col items-center"
+              initial={{ opacity: 0, x: b.side === "left" ? -20 : 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 1.3 + i * 0.1 }}
+            >
+              <div className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-card border border-border shadow-sm">
+                <b.icon className="w-4 h-4 text-emerald-500" />
+                <span className="text-xs font-semibold text-foreground">{b.label}</span>
+              </div>
+            </motion.div>
+          ))}
+        </motion.div>
+      </div>
+    </motion.div>
+  );
+};
 
 export const SlideProcesosFlow = () => {
   const [selectedProcess, setSelectedProcess] = useState<string | null>(null);
@@ -358,7 +431,7 @@ export const SlideProcesosFlow = () => {
 
                 {selectedProcess === "originacion" && <OriginacionView />}
                 {selectedProcess === "cotizacion" && <CotizacionView />}
-                {selectedProcess === "formalizacion" && <FormalizacionView />}
+                {selectedProcess === "lineas" && <LineasCreditoView />}
               </>
             )}
           </motion.div>
