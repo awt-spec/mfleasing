@@ -26,7 +26,7 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="badge-nocode">Agendar una Demo</span>
+          <span className="px-5 py-2 bg-[#C42126] text-white font-bold text-sm rounded-lg shadow-md hover:bg-[#a81b1f] transition-colors cursor-pointer">Agendar una Demo</span>
         </div>
       </div>
     </motion.header>
