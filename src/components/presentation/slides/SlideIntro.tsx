@@ -1,214 +1,155 @@
 import { motion } from "framer-motion";
 import { 
-  Building2, TrendingUp, Shield, Zap, FileText, Car, 
-  DollarSign, ClipboardList, RefreshCw, ShieldCheck,
-  BarChart3, ArrowRight, ArrowDown
+  Play, HelpCircle, Scale, GitBranch, Layers, LayoutGrid,
+  Settings, BarChart3, Flag
 } from "lucide-react";
-import { SubZoomContainer, StaggerContainer, StaggerItem } from "../SubZoomContainer";
+import { SubZoomContainer } from "../SubZoomContainer";
 
-const mapNodes = [
-  { id: "reglas", label: "Reglas de Negocio", icon: Shield, color: "bg-red-500", row: 0, col: 1 },
-  { id: "riesgos", label: "Análisis de Riesgos", icon: TrendingUp, color: "bg-amber-500", row: 1, col: 0 },
-  { id: "procesos", label: "Procesos Comerciales", icon: Building2, color: "bg-blue-500", row: 1, col: 2 },
-  { id: "formalizacion", label: "Formalización", icon: FileText, color: "bg-emerald-500", row: 2, col: 1 },
-  { id: "activos", label: "Admin. Activos", icon: Car, color: "bg-purple-500", row: 3, col: 0 },
-  { id: "cobranza", label: "Cobranza", icon: DollarSign, color: "bg-sky-500", row: 3, col: 1 },
-  { id: "seguros", label: "Seguros", icon: ShieldCheck, color: "bg-teal-500", row: 3, col: 2 },
-  { id: "compra", label: "Opción de Compra", icon: ClipboardList, color: "bg-orange-500", row: 4, col: 0 },
-  { id: "reestructuras", label: "Reestructuras", icon: RefreshCw, color: "bg-pink-500", row: 4, col: 1 },
-  { id: "reportes", label: "Reportes", icon: BarChart3, color: "bg-indigo-500", row: 4, col: 2 },
+const nodes = [
+  { id: 1, label: "Inicio", icon: Play, x: 50, y: 8, color: "bg-red-600" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 15, y: 28, color: "bg-blue-500" },
+  { id: 3, label: "Reglas", icon: Scale, x: 85, y: 28, color: "bg-amber-500" },
+  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 48, color: "bg-cyan-500" },
+  { id: 5, label: "Formalización", icon: Layers, x: 15, y: 65, color: "bg-purple-500" },
+  { id: 6, label: "Activos", icon: LayoutGrid, x: 85, y: 65, color: "bg-emerald-500" },
+  { id: 7, label: "Procesos", icon: Settings, x: 50, y: 78, color: "bg-pink-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 25, y: 93, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, x: 75, y: 93, color: "bg-red-700" },
 ];
 
-// Connections between nodes: [fromId, toId]
-const connections: [string, string][] = [
-  ["reglas", "riesgos"],
-  ["reglas", "procesos"],
-  ["riesgos", "formalizacion"],
-  ["procesos", "formalizacion"],
-  ["formalizacion", "activos"],
-  ["formalizacion", "cobranza"],
-  ["formalizacion", "seguros"],
-  ["cobranza", "compra"],
-  ["cobranza", "reestructuras"],
-  ["cobranza", "reportes"],
+// Connections as [fromIndex, toIndex]
+const connections: [number, number][] = [
+  [0, 1], [0, 2],   // Inicio → Flujo, Reglas
+  [1, 3], [2, 3],   // Flujo, Reglas → Riesgos
+  [3, 4], [3, 5],   // Riesgos → Formalización, Activos
+  [4, 6], [5, 6],   // Formalización, Activos → Procesos
+  [6, 7], [6, 8],   // Procesos → Reportes, Cierre
 ];
+
+// Generate SVG path between two points with a curve
+const getCurvedPath = (x1: number, y1: number, x2: number, y2: number) => {
+  const midY = (y1 + y2) / 2;
+  const cpOffset = Math.abs(x2 - x1) * 0.3;
+  return `M ${x1} ${y1} C ${x1 + (x2 > x1 ? cpOffset : -cpOffset)} ${midY}, ${x2 + (x1 > x2 ? cpOffset : -cpOffset)} ${midY}, ${x2} ${y2}`;
+};
 
 export const SlideIntro = () => {
+  // Map width/height for SVG coordinate system
+  const W = 700;
+  const H = 520;
+
   return (
-    <div className="w-full max-w-6xl mx-auto text-center px-4">
+    <div className="w-full max-w-4xl mx-auto text-center px-4">
       {/* Title */}
       <SubZoomContainer delay={0.1} direction="zoom">
-        <div className="flex items-center justify-center gap-4 mb-2">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-xl bg-primary shadow-lg">
-            <span className="text-3xl font-bold text-primary-foreground">S</span>
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary shadow-lg">
+            <span className="text-2xl font-bold text-primary-foreground">S</span>
           </div>
           <div className="text-left">
-            <h1 className="text-3xl md:text-4xl font-extrabold text-foreground tracking-tight">
+            <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Arrendamiento
             </h1>
-            <p className="text-sm text-primary font-semibold">Mapa Funcional Completo</p>
+            <p className="text-xs text-primary font-semibold">Mapa Funcional</p>
           </div>
         </div>
       </SubZoomContainer>
 
-      {/* Functional Map */}
-      <SubZoomContainer delay={0.3} direction="zoom" className="mt-6">
-        <div className="relative bg-card/50 border border-border rounded-2xl p-6 md:p-8 backdrop-blur-sm">
-          {/* Flow label */}
-          <motion.div
-            className="absolute -top-3 left-6 px-3 py-1 bg-primary text-primary-foreground text-xs font-bold rounded-full"
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
+      {/* Map */}
+      <SubZoomContainer delay={0.3} direction="zoom">
+        <div className="relative w-full" style={{ aspectRatio: `${W}/${H}` }}>
+          {/* SVG Lines */}
+          <svg
+            className="absolute inset-0 w-full h-full"
+            viewBox={`0 0 ${W} ${H}`}
+            preserveAspectRatio="xMidYMid meet"
+            fill="none"
           >
-            FLUJO OPERATIVO
-          </motion.div>
+            {connections.map(([fromIdx, toIdx], i) => {
+              const from = nodes[fromIdx];
+              const to = nodes[toIdx];
+              const x1 = (from.x / 100) * W;
+              const y1 = (from.y / 100) * H + 20;
+              const x2 = (to.x / 100) * W;
+              const y2 = (to.y / 100) * H - 5;
+              const path = getCurvedPath(x1, y1, x2, y2);
 
-          {/* Grid-based map */}
-          <div className="grid grid-rows-5 gap-4 mt-2">
-            {/* Row 0: Reglas */}
-            <StaggerContainer className="flex justify-center" staggerDelay={0.1} initialDelay={0.5}>
-              <StaggerItem>
-                <MapNode node={mapNodes[0]} index={0} />
-              </StaggerItem>
-            </StaggerContainer>
+              return (
+                <motion.path
+                  key={`line-${i}`}
+                  d={path}
+                  stroke="hsl(var(--primary))"
+                  strokeWidth="3"
+                  strokeDasharray="12 8"
+                  strokeLinecap="round"
+                  opacity="0.4"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={{ pathLength: 1, opacity: 0.4 }}
+                  transition={{ delay: 0.5 + i * 0.12, duration: 0.6, ease: "easeOut" }}
+                />
+              );
+            })}
+          </svg>
 
-            {/* Arrow down */}
-            <FlowArrows type="split" delay={0.7} />
+          {/* Nodes */}
+          {nodes.map((node, index) => {
+            const Icon = node.icon;
+            return (
+              <motion.div
+                key={node.id}
+                className="absolute flex flex-col items-center"
+                style={{
+                  left: `${node.x}%`,
+                  top: `${node.y}%`,
+                  transform: "translate(-50%, -50%)",
+                }}
+                initial={{ opacity: 0, scale: 0 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{
+                  delay: 0.4 + index * 0.13,
+                  type: "spring",
+                  stiffness: 300,
+                  damping: 20,
+                }}
+              >
+                {/* Badge number */}
+                <motion.div
+                  className="absolute -top-2 -right-2 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center z-20 shadow"
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.6 + index * 0.13, type: "spring" }}
+                >
+                  {node.id}
+                </motion.div>
 
-            {/* Row 1: Riesgos + Procesos */}
-            <StaggerContainer className="flex justify-center gap-16 md:gap-32" staggerDelay={0.1} initialDelay={0.8}>
-              <StaggerItem>
-                <MapNode node={mapNodes[1]} index={1} />
-              </StaggerItem>
-              <StaggerItem>
-                <MapNode node={mapNodes[2]} index={2} />
-              </StaggerItem>
-            </StaggerContainer>
+                {/* Icon box */}
+                <motion.div
+                  className={`w-12 h-12 md:w-14 md:h-14 rounded-xl ${node.color} flex items-center justify-center shadow-lg cursor-pointer relative z-10`}
+                  whileHover={{ scale: 1.15, y: -4 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                </motion.div>
 
-            {/* Arrow merge */}
-            <FlowArrows type="merge" delay={1.0} />
-
-            {/* Row 2: Formalización */}
-            <StaggerContainer className="flex justify-center" staggerDelay={0.1} initialDelay={1.1}>
-              <StaggerItem>
-                <MapNode node={mapNodes[3]} index={3} highlight />
-              </StaggerItem>
-            </StaggerContainer>
-
-            {/* Arrow split to 3 */}
-            <FlowArrows type="triple" delay={1.3} />
-
-            {/* Row 3: Activos, Cobranza, Seguros */}
-            <StaggerContainer className="flex justify-center gap-4 md:gap-8" staggerDelay={0.1} initialDelay={1.4}>
-              <StaggerItem>
-                <MapNode node={mapNodes[4]} index={4} />
-              </StaggerItem>
-              <StaggerItem>
-                <MapNode node={mapNodes[5]} index={5} />
-              </StaggerItem>
-              <StaggerItem>
-                <MapNode node={mapNodes[6]} index={6} />
-              </StaggerItem>
-            </StaggerContainer>
-
-            {/* Arrow down */}
-            <FlowArrows type="down" delay={1.6} />
-
-            {/* Row 4: Compra, Reestructuras, Reportes */}
-            <StaggerContainer className="flex justify-center gap-4 md:gap-8" staggerDelay={0.1} initialDelay={1.7}>
-              <StaggerItem>
-                <MapNode node={mapNodes[7]} index={7} />
-              </StaggerItem>
-              <StaggerItem>
-                <MapNode node={mapNodes[8]} index={8} />
-              </StaggerItem>
-              <StaggerItem>
-                <MapNode node={mapNodes[9]} index={9} />
-              </StaggerItem>
-            </StaggerContainer>
-          </div>
+                {/* Label */}
+                <span className="mt-1.5 px-2 py-0.5 bg-card/80 backdrop-blur-sm rounded text-[11px] md:text-xs font-semibold text-foreground shadow-sm border border-border/50 whitespace-nowrap">
+                  {node.label}
+                </span>
+              </motion.div>
+            );
+          })}
         </div>
       </SubZoomContainer>
 
       {/* Clients */}
-      <SubZoomContainer delay={2.0} direction="top" className="mt-6">
-        <p className="text-xs text-muted-foreground mb-2">Líderes que confían en Sysde</p>
-        <div className="flex items-center justify-center gap-8 opacity-50">
-          <span className="text-sm font-bold text-foreground">BANORTE</span>
-          <span className="text-sm font-bold text-foreground">HABITAT</span>
-          <span className="text-sm font-bold text-foreground">Credix</span>
+      <SubZoomContainer delay={2.0} direction="top" className="mt-2">
+        <p className="text-[10px] text-muted-foreground mb-1">Líderes que confían en Sysde</p>
+        <div className="flex items-center justify-center gap-6 opacity-50">
+          <span className="text-xs font-bold text-foreground">BANORTE</span>
+          <span className="text-xs font-bold text-foreground">HABITAT</span>
+          <span className="text-xs font-bold text-foreground">Credix</span>
         </div>
       </SubZoomContainer>
     </div>
-  );
-};
-
-// Map node component
-const MapNode = ({ node, index, highlight = false }: { 
-  node: typeof mapNodes[0]; 
-  index: number;
-  highlight?: boolean;
-}) => {
-  const Icon = node.icon;
-  return (
-    <motion.div
-      className={`flex items-center gap-2 px-4 py-3 rounded-xl border shadow-sm transition-all cursor-pointer
-        ${highlight 
-          ? "bg-primary/10 border-primary/40 ring-2 ring-primary/20" 
-          : "bg-card border-border hover:border-primary/30"
-        }`}
-      whileHover={{ scale: 1.05, y: -2 }}
-    >
-      <div className={`w-8 h-8 rounded-lg ${node.color} flex items-center justify-center flex-shrink-0`}>
-        <Icon className="w-4 h-4 text-white" />
-      </div>
-      <span className="text-xs md:text-sm font-semibold text-foreground whitespace-nowrap">{node.label}</span>
-    </motion.div>
-  );
-};
-
-// Flow arrows between rows
-const FlowArrows = ({ type, delay }: { type: "down" | "split" | "merge" | "triple"; delay: number }) => {
-  return (
-    <motion.div
-      className="flex justify-center items-center h-6"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      transition={{ delay }}
-    >
-      {type === "down" && (
-        <div className="flex gap-16 md:gap-24">
-          <ArrowDown className="w-4 h-4 text-muted-foreground" />
-          <ArrowDown className="w-4 h-4 text-muted-foreground" />
-          <ArrowDown className="w-4 h-4 text-muted-foreground" />
-        </div>
-      )}
-      {type === "split" && (
-        <div className="flex items-center gap-2">
-          <div className="w-16 md:w-24 h-px bg-muted-foreground/40" />
-          <ArrowDown className="w-4 h-4 text-muted-foreground" />
-          <div className="w-16 md:w-24 h-px bg-muted-foreground/40" />
-        </div>
-      )}
-      {type === "merge" && (
-        <div className="flex items-center gap-2">
-          <div className="w-16 md:w-24 h-px bg-muted-foreground/40" />
-          <ArrowDown className="w-4 h-4 text-primary" />
-          <div className="w-16 md:w-24 h-px bg-muted-foreground/40" />
-        </div>
-      )}
-      {type === "triple" && (
-        <div className="flex items-center gap-1">
-          <div className="w-8 md:w-16 h-px bg-muted-foreground/40" />
-          <ArrowDown className="w-3 h-3 text-muted-foreground" />
-          <div className="w-8 md:w-12 h-px bg-muted-foreground/40" />
-          <ArrowDown className="w-3 h-3 text-muted-foreground" />
-          <div className="w-8 md:w-12 h-px bg-muted-foreground/40" />
-          <ArrowDown className="w-3 h-3 text-muted-foreground" />
-          <div className="w-8 md:w-16 h-px bg-muted-foreground/40" />
-        </div>
-      )}
-    </motion.div>
   );
 };
