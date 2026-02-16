@@ -37,18 +37,8 @@ const getNodeCenter = (node: typeof nodes[0]) => ({
 const getSmoothPath = (fromIdx: number, toIdx: number) => {
   const from = getNodeCenter(nodes[fromIdx]);
   const to = getNodeCenter(nodes[toIdx]);
-
-  const angle = Math.atan2(to.cy - from.cy, to.cx - from.cx);
-  const r = 28;
-  const x1 = from.cx + Math.cos(angle) * r;
-  const y1 = from.cy + Math.sin(angle) * r;
-  const endAngle = Math.atan2(from.cy - to.cy, from.cx - to.cx);
-  const x2 = to.cx + Math.cos(endAngle) * r;
-  const y2 = to.cy + Math.sin(endAngle) * r;
-
-  // Straight lines with slight vertical curve
-  const cpOffset = Math.abs(y2 - y1) * 0.4;
-  return `M ${x1} ${y1} C ${x1} ${y1 + cpOffset}, ${x2} ${y2 - cpOffset}, ${x2} ${y2}`;
+  const midY = (from.cy + to.cy) / 2;
+  return `M ${from.cx} ${from.cy} C ${from.cx} ${midY}, ${to.cx} ${midY}, ${to.cx} ${to.cy}`;
 };
 
 export const SlideIntro = () => {
