@@ -6,6 +6,12 @@ import {
 } from "lucide-react";
 import { SubZoomContainer } from "../SubZoomContainer";
 
+const clients = [
+  "CMI", "DOS PINOS", "AFP CRECER", "BAC", "BANCO DE COSTA RICA", "UNICOMER",
+  "CREDICOMER", "FACTOR Y VALOR", "DESYFIN", "ION", "BANCO ADOPEM", "BROXEL",
+  "CREDICEFI", "CAPITAL ACTIVO", "VALMEX", "CFE", "COOPECAR",
+];
+
 const nodes = [
   { id: 1, label: "Inicio", icon: Play, x: 300, y: 50, color: "#dc2626" },
   { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 100, y: 150, color: "#3b82f6" },
@@ -55,7 +61,14 @@ export const SlideIntro = () => {
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Arrendamiento
             </h1>
-            <p className="text-xs text-primary font-semibold">Agendar una Demo</p>
+            <motion.a
+              href="#"
+              className="inline-block mt-1 px-5 py-2 bg-primary text-primary-foreground font-bold text-sm rounded-lg shadow-lg hover:shadow-xl transition-shadow"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+            >
+              Agendar una Demo
+            </motion.a>
           </div>
         </div>
       </SubZoomContainer>
@@ -197,13 +210,21 @@ export const SlideIntro = () => {
         </svg>
       </SubZoomContainer>
 
-      {/* Clients */}
-      <SubZoomContainer delay={2.0} direction="top" className="mt-1">
-        <p className="text-[10px] text-muted-foreground mb-1">Líderes que confían en Sysde</p>
-        <div className="flex items-center justify-center gap-6 opacity-50">
-          <span className="text-xs font-bold text-foreground">BANORTE</span>
-          <span className="text-xs font-bold text-foreground">HABITAT</span>
-          <span className="text-xs font-bold text-foreground">Credix</span>
+      {/* Clients carousel */}
+      <SubZoomContainer delay={2.0} direction="top" className="mt-1 overflow-hidden">
+        <p className="text-[10px] text-muted-foreground mb-2">Líderes que confían en Sysde</p>
+        <div className="relative w-full overflow-hidden">
+          <motion.div
+            className="flex gap-8 whitespace-nowrap"
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
+          >
+            {[...clients, ...clients].map((name, i) => (
+              <span key={`${name}-${i}`} className="text-xs font-bold text-foreground/40 flex-shrink-0">
+                {name}
+              </span>
+            ))}
+          </motion.div>
         </div>
       </SubZoomContainer>
     </div>
