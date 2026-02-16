@@ -6,15 +6,15 @@ import {
 import { SubZoomContainer } from "../SubZoomContainer";
 
 const nodes = [
-  { id: 1, label: "Inicio", icon: Play, x: 50, y: 5, color: "bg-red-600" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 22, y: 20, color: "bg-blue-500" },
-  { id: 3, label: "Reglas", icon: Scale, x: 78, y: 20, color: "bg-amber-500" },
-  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 35, color: "bg-cyan-500" },
-  { id: 5, label: "Comerciales", icon: Settings, x: 22, y: 50, color: "bg-pink-500" },
-  { id: 6, label: "Formalización", icon: Layers, x: 78, y: 50, color: "bg-purple-500" },
-  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 62, color: "bg-emerald-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 30, y: 78, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, x: 70, y: 78, color: "bg-red-700" },
+  { id: 1, label: "Inicio", icon: Play, x: 50, y: 6, color: "bg-red-600" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 22, y: 22, color: "bg-blue-500" },
+  { id: 3, label: "Reglas", icon: Scale, x: 78, y: 22, color: "bg-amber-500" },
+  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 38, color: "bg-cyan-500" },
+  { id: 5, label: "Comerciales", icon: Settings, x: 22, y: 54, color: "bg-pink-500" },
+  { id: 6, label: "Formalización", icon: Layers, x: 78, y: 54, color: "bg-purple-500" },
+  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 68, color: "bg-emerald-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 86, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 86, color: "bg-red-700" },
 ];
 
 // Connections: [fromIndex, toIndex]
@@ -27,7 +27,7 @@ const connections: [number, number][] = [
 ];
 
 const W = 600;
-const H = 500;
+const H = 420;
 
 const getNodeCenter = (node: typeof nodes[0]) => ({
   cx: (node.x / 100) * W,
@@ -46,9 +46,9 @@ const getSmoothPath = (fromIdx: number, toIdx: number) => {
   const x2 = to.cx + Math.cos(endAngle) * r;
   const y2 = to.cy + Math.sin(endAngle) * r;
 
-  // Simple vertical-biased control points for clean curves
-  const midY = (y1 + y2) / 2;
-  return `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
+  // Straight lines with slight vertical curve
+  const cpOffset = Math.abs(y2 - y1) * 0.4;
+  return `M ${x1} ${y1} C ${x1} ${y1 + cpOffset}, ${x2} ${y2 - cpOffset}, ${x2} ${y2}`;
 };
 
 export const SlideIntro = () => {
