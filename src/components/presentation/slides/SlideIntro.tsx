@@ -6,15 +6,15 @@ import {
 import { SubZoomContainer } from "../SubZoomContainer";
 
 const nodes = [
-  { id: 1, label: "Inicio", icon: Play, x: 50, y: 6, color: "bg-red-600" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 18, y: 24, color: "bg-blue-500" },
-  { id: 3, label: "Reglas", icon: Scale, x: 82, y: 24, color: "bg-amber-500" },
+  { id: 1, label: "Inicio", icon: Play, x: 50, y: 8, color: "bg-red-600" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 20, y: 25, color: "bg-blue-500" },
+  { id: 3, label: "Reglas", icon: Scale, x: 80, y: 25, color: "bg-amber-500" },
   { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 42, color: "bg-cyan-500" },
-  { id: 5, label: "Formalización", icon: Layers, x: 18, y: 58, color: "bg-purple-500" },
-  { id: 6, label: "Activos", icon: LayoutGrid, x: 82, y: 58, color: "bg-emerald-500" },
-  { id: 7, label: "Procesos", icon: Settings, x: 50, y: 74, color: "bg-pink-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 25, y: 90, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, x: 75, y: 90, color: "bg-red-700" },
+  { id: 5, label: "Formalización", icon: Layers, x: 20, y: 57, color: "bg-purple-500" },
+  { id: 6, label: "Activos", icon: LayoutGrid, x: 80, y: 57, color: "bg-emerald-500" },
+  { id: 7, label: "Procesos", icon: Settings, x: 50, y: 72, color: "bg-pink-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 88, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 88, color: "bg-red-700" },
 ];
 
 // Connections: [fromIndex, toIndex]
