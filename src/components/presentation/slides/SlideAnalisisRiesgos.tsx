@@ -61,30 +61,51 @@ export const SlideAnalisisRiesgos = () => {
       <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
         {/* Capabilities - 3 cols */}
         <SubZoomContainer delay={0.7} direction="left" className="md:col-span-3">
-          <div className="p-5 rounded-2xl bg-card border border-border shadow-sm h-full">
-            <h3 className="text-sm font-bold text-foreground mb-4 flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-primary" />
-              Funcionalidades
+          <div className="p-5 rounded-2xl bg-card border border-border shadow-sm h-full relative overflow-hidden">
+            {/* Tech grid background */}
+            <div className="absolute inset-0 opacity-[0.03]" style={{
+              backgroundImage: 'linear-gradient(hsl(var(--primary)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--primary)) 1px, transparent 1px)',
+              backgroundSize: '20px 20px'
+            }} />
+            <h3 className="relative text-sm font-bold text-foreground mb-4 flex items-center gap-2">
+              <div className="flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-red-500" />
+                <span className="w-2 h-2 rounded-full bg-yellow-500" />
+                <span className="w-2 h-2 rounded-full bg-green-500" />
+              </div>
+              <code className="text-xs font-mono text-primary ml-1">funcionalidades.config</code>
             </h3>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="relative grid grid-cols-2 gap-3">
               {capabilities.map((cap, i) => (
                 <motion.div
                   key={cap.label}
-                  className="flex items-start gap-3 p-3 rounded-xl bg-muted/50 hover:bg-muted transition-colors"
+                  className="relative flex items-start gap-3 p-3 rounded-xl bg-muted/50 border border-transparent hover:border-primary/30 hover:bg-primary/5 transition-all group"
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   transition={{ delay: 0.9 + i * 0.1 }}
                   whileHover={{ x: 4 }}
                 >
-                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <div className="w-9 h-9 rounded-lg bg-primary/10 flex items-center justify-center flex-shrink-0 border border-primary/20 group-hover:shadow-[0_0_12px_hsl(var(--primary)/0.3)] transition-shadow">
                     <cap.icon className="w-4 h-4 text-primary" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-foreground block">{cap.label}</span>
+                    <span className="text-xs font-bold text-foreground block font-mono">{cap.label}</span>
                     <span className="text-[10px] text-muted-foreground">{cap.desc}</span>
                   </div>
+                  {/* Blinking cursor indicator */}
+                  <motion.div
+                    className="absolute top-2 right-2 w-1.5 h-1.5 rounded-full bg-green-500"
+                    animate={{ opacity: [1, 0.3, 1] }}
+                    transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.3 }}
+                  />
                 </motion.div>
               ))}
+            </div>
+            {/* Terminal-style footer */}
+            <div className="relative mt-3 pt-2 border-t border-border/50">
+              <code className="text-[9px] text-muted-foreground/60 font-mono">
+                <span className="text-green-500">●</span> 4 módulos activos — latencia {"<"} 200ms — uptime 99.9%
+              </code>
             </div>
           </div>
         </SubZoomContainer>
