@@ -26,9 +26,9 @@ const connections: [number, number][] = [
   [6, 7], [6, 8],
 ];
 
-const COLS = [120, 300, 480]; // x positions for 3 columns
-const ROW_H = 64; // vertical spacing between rows
-const PAD_TOP = 30;
+const COLS = [100, 300, 500]; // x positions for 3 columns
+const ROW_H = 90; // vertical spacing between rows
+const PAD_TOP = 40;
 const W = 600;
 const H = PAD_TOP + 6 * ROW_H + 20;
 
@@ -40,8 +40,9 @@ const getNodePos = (node: typeof nodes[0]) => ({
 const getSmoothPath = (fromIdx: number, toIdx: number) => {
   const from = getNodePos(nodes[fromIdx]);
   const to = getNodePos(nodes[toIdx]);
-  const midY = (from.cy + to.cy) / 2;
-  return `M ${from.cx} ${from.cy} C ${from.cx} ${midY}, ${to.cx} ${midY}, ${to.cx} ${to.cy}`;
+  const dy = Math.abs(to.cy - from.cy);
+  const offset = dy * 0.35;
+  return `M ${from.cx} ${from.cy + 20} C ${from.cx} ${from.cy + 20 + offset}, ${to.cx} ${to.cy - 20 - offset}, ${to.cx} ${to.cy - 20}`;
 };
 
 export const SlideIntro = () => {
