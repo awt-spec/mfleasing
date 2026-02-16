@@ -1,21 +1,20 @@
 import { motion } from "framer-motion";
-import { 
+import {
   Play, HelpCircle, Scale, GitBranch, Layers, LayoutGrid,
   Settings, BarChart3, Flag
 } from "lucide-react";
 import { SubZoomContainer } from "../SubZoomContainer";
 
-// Row-based layout: each row has nodes at fixed positions
 const nodes = [
-  { id: 1, label: "Inicio", icon: Play, row: 0, col: 1, color: "bg-red-600" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, row: 1, col: 0, color: "bg-blue-500" },
-  { id: 3, label: "Reglas", icon: Scale, row: 1, col: 2, color: "bg-amber-500" },
-  { id: 4, label: "Riesgos", icon: GitBranch, row: 2, col: 1, color: "bg-cyan-500" },
-  { id: 5, label: "Comerciales", icon: Settings, row: 3, col: 0, color: "bg-pink-500" },
-  { id: 6, label: "Formalización", icon: Layers, row: 3, col: 2, color: "bg-purple-500" },
-  { id: 7, label: "Admin. Activos", icon: LayoutGrid, row: 4, col: 1, color: "bg-emerald-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, row: 5, col: 0, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, row: 5, col: 2, color: "bg-red-700" },
+  { id: 1, label: "Inicio", icon: Play, x: 300, y: 50, color: "#dc2626" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 100, y: 150, color: "#3b82f6" },
+  { id: 3, label: "Reglas", icon: Scale, x: 500, y: 150, color: "#f59e0b" },
+  { id: 4, label: "Riesgos", icon: GitBranch, x: 300, y: 250, color: "#06b6d4" },
+  { id: 5, label: "Comerciales", icon: Settings, x: 100, y: 350, color: "#ec4899" },
+  { id: 6, label: "Formalización", icon: Layers, x: 500, y: 350, color: "#8b5cf6" },
+  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 300, y: 450, color: "#10b981" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 100, y: 550, color: "#6366f1" },
+  { id: 9, label: "Cierre", icon: Flag, x: 500, y: 550, color: "#b91c1c" },
 ];
 
 const connections: [number, number][] = [
@@ -26,24 +25,20 @@ const connections: [number, number][] = [
   [6, 7], [6, 8],
 ];
 
-const COLS = [100, 300, 500]; // x positions for 3 columns
-const ROW_H = 90; // vertical spacing between rows
-const PAD_TOP = 40;
 const W = 600;
-const H = PAD_TOP + 6 * ROW_H + 20;
+const H = 610;
+const NODE_R = 24; // icon box half-size
 
-const getNodePos = (node: typeof nodes[0]) => ({
-  cx: COLS[node.col],
-  cy: PAD_TOP + node.row * ROW_H,
-});
-
-const getSmoothPath = (fromIdx: number, toIdx: number) => {
-  const from = getNodePos(nodes[fromIdx]);
-  const to = getNodePos(nodes[toIdx]);
-  // Simple quadratic curve through midpoint - no offsets
-  const midX = (from.cx + to.cx) / 2;
-  const midY = (from.cy + to.cy) / 2;
-  return `M ${from.cx} ${from.cy} Q ${midX} ${midY}, ${to.cx} ${to.cy}`;
+const getPath = (fi: number, ti: number) => {
+  const f = nodes[fi];
+  const t = nodes[ti];
+  // Start from bottom of source, end at top of target
+  const x1 = f.x, y1 = f.y + NODE_R;
+  const x2 = t.x, y2 = t.y - NODE_R;
+  // Control points: vertical bias
+  const cy1 = y1 + (y2 - y1) * 0.5;
+  const cy2 = y1 + (y2 - y1) * 0.5;
+  return `M ${x1} ${y1} C ${x1} ${cy1}, ${x2} ${cy2}, ${x2} ${y2}`;
 };
 
 export const SlideIntro = () => {
@@ -64,115 +59,141 @@ export const SlideIntro = () => {
         </div>
       </SubZoomContainer>
 
-      {/* Map */}
+      {/* Pure SVG Map */}
       <SubZoomContainer delay={0.3} direction="zoom">
-        <div className="relative w-full" style={{ aspectRatio: `${W}/${H}` }}>
-          {/* SVG Lines */}
-          <svg
-            className="absolute inset-0 w-full h-full pointer-events-none"
-            viewBox={`0 0 ${W} ${H}`}
-            preserveAspectRatio="xMidYMid meet"
-            fill="none"
-          >
-            {connections.map(([fromIdx, toIdx], i) => {
-              const path = getSmoothPath(fromIdx, toIdx);
-              return (
-                <motion.path
-                  key={`line-${i}`}
-                  d={path}
-                  stroke="hsl(var(--primary) / 0.3)"
-                  strokeWidth="2"
-                  strokeDasharray="8 5"
-                  strokeLinecap="round"
-                  fill="none"
-                  initial={{ pathLength: 0 }}
-                  animate={{ pathLength: 1 }}
-                  transition={{ delay: 0.6 + i * 0.12, duration: 0.7, ease: "easeInOut" }}
-                />
-              );
-            })}
+        <svg
+          viewBox={`0 0 ${W} ${H}`}
+          className="w-full max-w-xl mx-auto"
+          style={{ overflow: "visible" }}
+        >
+          {/* Connection lines */}
+          {connections.map(([fi, ti], i) => (
+            <motion.path
+              key={`line-${i}`}
+              d={getPath(fi, ti)}
+              stroke="hsl(var(--primary) / 0.25)"
+              strokeWidth="2"
+              strokeLinecap="round"
+              fill="none"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ delay: 0.5 + i * 0.1, duration: 0.6, ease: "easeInOut" }}
+            />
+          ))}
 
-            {/* Animated dots */}
-            {connections.map(([fromIdx, toIdx], i) => {
-              const path = getSmoothPath(fromIdx, toIdx);
-              const pathId = `path-${i}`;
-              return (
-                <g key={`dot-${i}`}>
-                  <defs>
-                    <path id={pathId} d={path} />
-                  </defs>
-                  <motion.circle
-                    r="3"
-                    fill="hsl(var(--primary))"
-                    opacity="0.6"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.6, 0.6, 0] }}
-                    transition={{
-                      delay: 1.5 + i * 0.2,
-                      duration: 2.5,
-                      repeat: Infinity,
-                      repeatDelay: 3,
-                    }}
+          {/* Animated dots traveling along paths */}
+          {connections.map(([fi, ti], i) => {
+            const pathId = `conn-${i}`;
+            return (
+              <g key={`dot-${i}`}>
+                <defs>
+                  <path id={pathId} d={getPath(fi, ti)} />
+                </defs>
+                <motion.circle
+                  r="3"
+                  fill="hsl(var(--primary))"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: [0, 0.7, 0.7, 0] }}
+                  transition={{
+                    delay: 1.5 + i * 0.2,
+                    duration: 2.5,
+                    repeat: Infinity,
+                    repeatDelay: 3,
+                  }}
+                >
+                  <animateMotion
+                    dur="2.5s"
+                    repeatCount="indefinite"
+                    begin={`${1.5 + i * 0.2}s`}
                   >
-                    <animateMotion
-                      dur="2.5s"
-                      repeatCount="indefinite"
-                      begin={`${1.5 + i * 0.2}s`}
-                    >
-                      <mpath href={`#${pathId}`} />
-                    </animateMotion>
-                  </motion.circle>
-                </g>
-              );
-            })}
-          </svg>
+                    <mpath href={`#${pathId}`} />
+                  </animateMotion>
+                </motion.circle>
+              </g>
+            );
+          })}
 
-          {/* Nodes */}
+          {/* Nodes - all in SVG */}
           {nodes.map((node, index) => {
             const Icon = node.icon;
-            const pos = getNodePos(node);
             return (
-              <motion.div
+              <motion.g
                 key={node.id}
-                className="absolute flex flex-col items-center"
-                style={{
-                  left: `${(pos.cx / W) * 100}%`,
-                  top: `${(pos.cy / H) * 100}%`,
-                  transform: "translate(-50%, -50%)",
-                }}
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  delay: 0.3 + index * 0.1,
+                  delay: 0.3 + index * 0.08,
                   type: "spring",
                   stiffness: 300,
                   damping: 20,
                 }}
+                style={{ transformOrigin: `${node.x}px ${node.y}px` }}
               >
-                <motion.div
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center z-20 shadow"
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
+                {/* Icon background */}
+                <rect
+                  x={node.x - NODE_R}
+                  y={node.y - NODE_R}
+                  width={NODE_R * 2}
+                  height={NODE_R * 2}
+                  rx="10"
+                  fill={node.color}
+                  className="drop-shadow-lg"
+                />
+                {/* Icon (as foreignObject) */}
+                <foreignObject
+                  x={node.x - 12}
+                  y={node.y - 12}
+                  width="24"
+                  height="24"
+                >
+                  <Icon
+                    style={{ width: 24, height: 24, color: "white" }}
+                  />
+                </foreignObject>
+
+                {/* Badge number */}
+                <circle
+                  cx={node.x + NODE_R - 2}
+                  cy={node.y - NODE_R + 2}
+                  r="9"
+                  fill="hsl(var(--primary))"
+                />
+                <text
+                  x={node.x + NODE_R - 2}
+                  y={node.y - NODE_R + 6}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="bold"
+                  fill="white"
                 >
                   {node.id}
-                </motion.div>
+                </text>
 
-                <motion.div
-                  className={`w-11 h-11 md:w-13 md:h-13 rounded-xl ${node.color} flex items-center justify-center shadow-lg cursor-pointer relative z-10`}
-                  whileHover={{ scale: 1.15, y: -4 }}
-                  whileTap={{ scale: 0.95 }}
+                {/* Label */}
+                <rect
+                  x={node.x - node.label.length * 3.5 - 6}
+                  y={node.y + NODE_R + 4}
+                  width={node.label.length * 7 + 12}
+                  height="18"
+                  rx="4"
+                  fill="hsl(var(--card))"
+                  stroke="hsl(var(--border) / 0.5)"
+                  strokeWidth="0.5"
+                />
+                <text
+                  x={node.x}
+                  y={node.y + NODE_R + 16}
+                  textAnchor="middle"
+                  fontSize="10"
+                  fontWeight="600"
+                  fill="hsl(var(--foreground))"
                 >
-                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
-                </motion.div>
-
-                <span className="mt-1 px-2 py-0.5 bg-card/80 backdrop-blur-sm rounded text-[10px] md:text-[11px] font-semibold text-foreground shadow-sm border border-border/50 whitespace-nowrap">
                   {node.label}
-                </span>
-              </motion.div>
+                </text>
+              </motion.g>
             );
           })}
-        </div>
+        </svg>
       </SubZoomContainer>
 
       {/* Clients */}
