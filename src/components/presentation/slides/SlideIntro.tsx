@@ -5,19 +5,19 @@ import {
 } from "lucide-react";
 import { SubZoomContainer } from "../SubZoomContainer";
 
+// Row-based layout: each row has nodes at fixed positions
 const nodes = [
-  { id: 1, label: "Inicio", icon: Play, x: 50, y: 6, color: "bg-red-600" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 22, y: 22, color: "bg-blue-500" },
-  { id: 3, label: "Reglas", icon: Scale, x: 78, y: 22, color: "bg-amber-500" },
-  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 38, color: "bg-cyan-500" },
-  { id: 5, label: "Comerciales", icon: Settings, x: 22, y: 54, color: "bg-pink-500" },
-  { id: 6, label: "Formalización", icon: Layers, x: 78, y: 54, color: "bg-purple-500" },
-  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 68, color: "bg-emerald-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 86, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 86, color: "bg-red-700" },
+  { id: 1, label: "Inicio", icon: Play, row: 0, col: 1, color: "bg-red-600" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, row: 1, col: 0, color: "bg-blue-500" },
+  { id: 3, label: "Reglas", icon: Scale, row: 1, col: 2, color: "bg-amber-500" },
+  { id: 4, label: "Riesgos", icon: GitBranch, row: 2, col: 1, color: "bg-cyan-500" },
+  { id: 5, label: "Comerciales", icon: Settings, row: 3, col: 0, color: "bg-pink-500" },
+  { id: 6, label: "Formalización", icon: Layers, row: 3, col: 2, color: "bg-purple-500" },
+  { id: 7, label: "Admin. Activos", icon: LayoutGrid, row: 4, col: 1, color: "bg-emerald-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, row: 5, col: 0, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, row: 5, col: 2, color: "bg-red-700" },
 ];
 
-// Connections: [fromIndex, toIndex]
 const connections: [number, number][] = [
   [0, 1], [0, 2],
   [1, 3], [2, 3],
@@ -26,17 +26,20 @@ const connections: [number, number][] = [
   [6, 7], [6, 8],
 ];
 
+const COLS = [120, 300, 480]; // x positions for 3 columns
+const ROW_H = 64; // vertical spacing between rows
+const PAD_TOP = 30;
 const W = 600;
-const H = 420;
+const H = PAD_TOP + 6 * ROW_H + 20;
 
-const getNodeCenter = (node: typeof nodes[0]) => ({
-  cx: (node.x / 100) * W,
-  cy: (node.y / 100) * H,
+const getNodePos = (node: typeof nodes[0]) => ({
+  cx: COLS[node.col],
+  cy: PAD_TOP + node.row * ROW_H,
 });
 
 const getSmoothPath = (fromIdx: number, toIdx: number) => {
-  const from = getNodeCenter(nodes[fromIdx]);
-  const to = getNodeCenter(nodes[toIdx]);
+  const from = getNodePos(nodes[fromIdx]);
+  const to = getNodePos(nodes[toIdx]);
   const midY = (from.cy + to.cy) / 2;
   return `M ${from.cx} ${from.cy} C ${from.cx} ${midY}, ${to.cx} ${midY}, ${to.cx} ${to.cy}`;
 };
@@ -125,13 +128,14 @@ export const SlideIntro = () => {
           {/* Nodes */}
           {nodes.map((node, index) => {
             const Icon = node.icon;
+            const pos = getNodePos(node);
             return (
               <motion.div
                 key={node.id}
                 className="absolute flex flex-col items-center"
                 style={{
-                  left: `${node.x}%`,
-                  top: `${node.y}%`,
+                  left: `${(pos.cx / W) * 100}%`,
+                  top: `${(pos.cy / H) * 100}%`,
                   transform: "translate(-50%, -50%)",
                 }}
                 initial={{ opacity: 0, scale: 0 }}
