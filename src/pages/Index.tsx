@@ -13,10 +13,6 @@ import { SlideAnalisisRiesgos } from "@/components/presentation/slides/SlideAnal
 import { SlideProcesosFlow } from "@/components/presentation/slides/SlideProcesosFlow";
 import { SlideFormalizacion } from "@/components/presentation/slides/SlideFormalizacion";
 import { SlideAdminActivos } from "@/components/presentation/slides/SlideAdminActivos";
-import { SlideCobranza } from "@/components/presentation/slides/SlideCobranza";
-import { SlideSeguros } from "@/components/presentation/slides/SlideSeguros";
-import { SlideOpcionCompra } from "@/components/presentation/slides/SlideOpcionCompra";
-import { SlideReestructuras } from "@/components/presentation/slides/SlideReestructuras";
 import { SlideReportes } from "@/components/presentation/slides/SlideReportes";
 import { SlideClosing } from "@/components/presentation/slides/SlideClosing";
 
@@ -26,15 +22,11 @@ const slides = [
   { id: 1, component: SlideFlujoOperativo, label: "Flujo" },
   { id: 2, component: SlideReglasNegocioNew, label: "Reglas" },
   { id: 3, component: SlideAnalisisRiesgos, label: "Riesgos" },
-  { id: 4, component: SlideProcesosFlow, label: "Procesos" },
+  { id: 4, component: SlideProcesosFlow, label: "Comerciales" },
   { id: 5, component: SlideFormalizacion, label: "Formalización" },
   { id: 6, component: SlideAdminActivos, label: "Activos" },
-  { id: 7, component: SlideCobranza, label: "Cobranza" },
-  { id: 8, component: SlideSeguros, label: "Seguros" },
-  { id: 9, component: SlideOpcionCompra, label: "Compra" },
-  { id: 10, component: SlideReestructuras, label: "Reestructuras" },
-  { id: 11, component: SlideReportes, label: "Reportes" },
-  { id: 12, component: SlideClosing, label: "Cierre" },
+  { id: 7, component: SlideReportes, label: "Reportes" },
+  { id: 8, component: SlideClosing, label: "Cierre" },
 ];
 
 const Index = () => {

@@ -388,7 +388,7 @@ export const SlideProcesosFlow = () => {
               <div className="flex items-center justify-center gap-3 mb-2">
                 <TrendingUp className="w-10 h-10 text-primary" />
                 <h2 className="text-4xl md:text-5xl font-bold text-foreground">
-                  Macro Procesos
+                  Procesos Comerciales
                 </h2>
               </div>
               <p className="text-lg text-muted-foreground">
