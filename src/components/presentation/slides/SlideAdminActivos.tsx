@@ -5,9 +5,9 @@ import {
   Calculator, Banknote, ArrowDown, CreditCard, Hash, Tag, Receipt, Clock,
   ArrowRight, Truck, Factory, HardHat, Stethoscope, Server, ShoppingCart,
   Sun, Building, Tractor, Code, Settings2, Landmark, SlidersHorizontal,
-  CircleDot, Layers, ClipboardList
+  CircleDot, Layers, ClipboardList, Pencil, Plus
 } from "lucide-react";
-import { CategoryCard } from "../CategoryCard";
+
 import { SubzoomHeader } from "../SubzoomHeader";
 import { CategoryLegend } from "../CategoryLegend";
 import { SubZoomContainer, StaggerContainer, StaggerItem } from "../SubZoomContainer";
@@ -414,13 +414,13 @@ const PagoProveedoresView = () => {
   );
 };
 
-// ---- COBRANZA: Flow ----
+// ---- COBRANZA: No-Code Workflow ----
 const CobranzaView = () => {
-  const steps = [
-    { icon: Calendar, label: "Generación de cuotas", highlight: true },
+  const workflowSteps = [
+    { icon: Calendar, label: "Generación de cuotas" },
     { icon: Banknote, label: "Aplicación de pagos" },
     { icon: Clock, label: "Cálculo de mora e intereses" },
-    { icon: Settings2, label: "Reglas de cobro configurables", highlight: true },
+    { icon: Settings2, label: "Reglas de cobro configurables" },
     { icon: Receipt, label: "Gestión de cobro (notificaciones)" },
     { icon: CircleDot, label: "Estatus de cartera" },
     { icon: FileText, label: "Estados de cuenta" },
@@ -428,33 +428,83 @@ const CobranzaView = () => {
 
   return (
     <motion.div
-      className="flex flex-col items-center"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
+      className="space-y-4"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <StaggerContainer className="flex flex-col items-center gap-1" staggerDelay={0.08} initialDelay={0.3}>
-        {steps.map((step, i) => (
-          <StaggerItem key={step.label} className="flex flex-col items-center">
-            <motion.div
-              className={`flex items-center gap-3 px-5 py-3 rounded-xl border shadow-sm w-full max-w-md ${
-                step.highlight
-                  ? "bg-red-500/10 border-red-300/50 dark:border-red-700/50"
-                  : "bg-card border-border"
-              }`}
-              whileHover={{ scale: 1.02, x: 4 }}
-            >
-              <div className={`w-8 h-8 rounded-lg ${step.highlight ? "bg-red-500/20" : "bg-muted"} flex items-center justify-center`}>
-                <step.icon className={`w-4 h-4 ${step.highlight ? "text-red-600" : "text-muted-foreground"}`} />
-              </div>
-              <span className="text-sm font-semibold text-foreground">{step.label}</span>
-            </motion.div>
-            {i < steps.length - 1 && (
-              <ArrowDown className="w-3 h-3 text-muted-foreground my-0.5 opacity-40" />
-            )}
-          </StaggerItem>
-        ))}
-      </StaggerContainer>
+      {/* Workflow */}
+      <div className="p-6 rounded-2xl bg-card border border-border shadow-sm">
+        <div className="flex items-center gap-2 mb-4">
+          <Receipt className="w-5 h-5 text-red-500" />
+          <span className="text-sm font-bold text-foreground">Flujo de Cobranza</span>
+          <motion.span
+            className="ml-auto px-2.5 py-0.5 bg-gradient-to-r from-violet-500 to-fuchsia-500 text-white text-[10px] font-bold rounded-full"
+            animate={{ scale: [1, 1.05, 1] }}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            NO-CODE
+          </motion.span>
+        </div>
+
+        <StaggerContainer className="flex flex-col items-center gap-1" staggerDelay={0.08} initialDelay={0.3}>
+          {workflowSteps.map((step, i) => (
+            <StaggerItem key={step.label} className="w-full flex flex-col items-center">
+              <motion.div
+                className="flex items-center gap-3 px-4 py-2.5 rounded-xl bg-muted/50 border border-border w-full max-w-sm group cursor-grab"
+                whileHover={{ scale: 1.02 }}
+              >
+                <div className="flex flex-col gap-0.5 opacity-30 group-hover:opacity-60">
+                  <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-foreground" /><div className="w-1 h-1 rounded-full bg-foreground" /></div>
+                  <div className="flex gap-0.5"><div className="w-1 h-1 rounded-full bg-foreground" /><div className="w-1 h-1 rounded-full bg-foreground" /></div>
+                </div>
+                <div className="w-7 h-7 rounded-lg bg-red-500/10 flex items-center justify-center">
+                  <step.icon className="w-3.5 h-3.5 text-red-600" />
+                </div>
+                <span className="text-xs font-semibold text-foreground">{step.label}</span>
+                <Pencil className="w-3 h-3 text-muted-foreground ml-auto opacity-0 group-hover:opacity-100 transition-opacity" />
+              </motion.div>
+              {i < workflowSteps.length - 1 && <ArrowDown className="w-3 h-3 text-muted-foreground my-0.5 opacity-40" />}
+            </StaggerItem>
+          ))}
+        </StaggerContainer>
+      </div>
+
+      {/* Adaptable section */}
+      <SubZoomContainer delay={0.9} direction="bottom">
+        <div className="p-5 rounded-2xl bg-red-500/5 border border-red-300/30">
+          <div className="flex items-center gap-2 mb-3">
+            <Settings2 className="w-4 h-4 text-red-500" />
+            <span className="text-sm font-bold text-foreground">100% Personalizable</span>
+          </div>
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: Plus, label: "Agregar", desc: "Nuevos pasos y reglas", color: "text-emerald-500" },
+              { icon: Pencil, label: "Editar", desc: "Condiciones y plazos", color: "text-blue-500" },
+              { icon: Layers, label: "Organizar", desc: "Orden y prioridad", color: "text-amber-500" },
+            ].map(item => (
+              <motion.div
+                key={item.label}
+                className="p-3 rounded-xl bg-card border border-border text-center"
+                whileHover={{ y: -2, scale: 1.02 }}
+              >
+                <item.icon className={`w-5 h-5 ${item.color} mx-auto mb-1`} />
+                <span className="text-xs font-bold text-foreground block">{item.label}</span>
+                <span className="text-[10px] text-muted-foreground">{item.desc}</span>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div
+            className="mt-3 px-4 py-2 rounded-lg bg-red-500/10 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.2 }}
+          >
+            <span className="text-red-600 text-xs font-bold">Sin código</span>
+            <span className="text-xs text-muted-foreground"> — Diseña el workflow de cobranza perfecto para tu operación</span>
+          </motion.div>
+        </div>
+      </SubZoomContainer>
     </motion.div>
   );
 };
@@ -475,7 +525,7 @@ export const SlideAdminActivos = () => {
             exit={{ opacity: 0, scale: 1.1 }}
             transition={{ duration: 0.5 }}
           >
-            <SubZoomContainer delay={0.1} direction="zoom" className="text-center mb-10">
+            <SubZoomContainer delay={0.1} direction="zoom" className="text-center mb-8">
               <div className="flex items-center justify-center gap-3 mb-2">
                 <Package className="w-10 h-10 text-primary" />
                 <h2 className="text-4xl md:text-5xl font-bold text-foreground">
@@ -487,16 +537,43 @@ export const SlideAdminActivos = () => {
               </p>
             </SubZoomContainer>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4">
-              {processes.map((process, index) => (
-                <CategoryCard
-                  key={process.id}
-                  {...process}
-                  delay={0.2 + index * 0.1}
-                  onClick={() => setSelectedProcess(process.id)}
-                />
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" staggerDelay={0.1} initialDelay={0.2}>
+              {processes.map((process) => (
+                <StaggerItem key={process.id}>
+                  <motion.div
+                    className="bg-card rounded-2xl border border-border shadow-md p-4 flex flex-col h-full cursor-pointer"
+                    whileHover={{ y: -4, boxShadow: "0 16px 32px -12px rgba(0,0,0,0.15)" }}
+                    onClick={() => setSelectedProcess(process.id)}
+                  >
+                    <motion.div
+                      className={`w-11 h-11 rounded-xl ${process.iconBg} flex items-center justify-center mb-3`}
+                      whileHover={{ scale: 1.1, rotate: 5 }}
+                    >
+                      <process.icon className={`w-5 h-5 ${process.iconColor}`} />
+                    </motion.div>
+                    <h3 className="text-sm font-bold text-foreground mb-1 leading-tight">{process.title}</h3>
+                    <p className="text-[10px] text-muted-foreground mb-3 leading-snug">{process.description}</p>
+                    
+                    <div className="flex flex-wrap gap-1 mb-3 flex-1">
+                      {process.tags.slice(0, 3).map((tag) => (
+                        <div key={tag.label} className="flex items-center gap-1 px-2 py-1 bg-muted/60 rounded-md">
+                          <tag.icon className="w-3 h-3 text-muted-foreground" />
+                          <span className="text-[9px] font-medium text-foreground">{tag.label}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <motion.div
+                      className={`w-full py-2 px-3 rounded-xl text-white text-xs font-semibold text-center ${process.buttonColor}`}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                    >
+                      Ver {process.itemCount} config.
+                    </motion.div>
+                  </motion.div>
+                </StaggerItem>
               ))}
-            </div>
+            </StaggerContainer>
 
             <CategoryLegend items={legendItems} />
           </motion.div>
