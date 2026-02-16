@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoSysde from "@/assets/logo_sysde.png";
 
 interface HeaderProps {
   showLogo?: boolean;
@@ -16,16 +17,14 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
     >
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-lg">S</span>
-          </div>
+          <img src={logoSysde} alt="Sysde" className="w-10 h-10 object-contain" />
           <div>
             <h1 className="text-lg font-bold text-foreground">Sysde</h1>
             <p className="text-xs text-muted-foreground">Arrendamiento</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
-          <span className="badge-nocode">Mapa Funcional</span>
+          <span className="badge-nocode">Agendar una Demo</span>
         </div>
       </div>
     </motion.header>

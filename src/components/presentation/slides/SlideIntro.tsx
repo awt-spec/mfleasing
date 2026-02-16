@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import logoSysde from "@/assets/logo_sysde.png";
 import {
   Play, HelpCircle, Scale, GitBranch, Layers, LayoutGrid,
   Settings, BarChart3, Flag
@@ -47,14 +48,12 @@ export const SlideIntro = () => {
       {/* Title */}
       <SubZoomContainer delay={0.1} direction="zoom">
         <div className="flex items-center justify-center gap-3 mb-2">
-          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary shadow-lg">
-            <span className="text-2xl font-bold text-primary-foreground">S</span>
-          </div>
+          <img src={logoSysde} alt="Sysde" className="w-12 h-12 object-contain" />
           <div className="text-left">
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Arrendamiento
             </h1>
-            <p className="text-xs text-primary font-semibold">Mapa Funcional</p>
+            <p className="text-xs text-primary font-semibold">Agendar una Demo</p>
           </div>
         </div>
       </SubZoomContainer>
