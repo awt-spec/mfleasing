@@ -10,21 +10,20 @@ const nodes = [
   { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 20, y: 25, color: "bg-blue-500" },
   { id: 3, label: "Reglas", icon: Scale, x: 80, y: 25, color: "bg-amber-500" },
   { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 42, color: "bg-cyan-500" },
-  { id: 5, label: "Formalización", icon: Layers, x: 20, y: 57, color: "bg-purple-500" },
-  { id: 6, label: "Activos", icon: LayoutGrid, x: 80, y: 57, color: "bg-emerald-500" },
-  { id: 7, label: "Procesos", icon: Settings, x: 50, y: 72, color: "bg-pink-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 88, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 88, color: "bg-red-700" },
+  { id: 5, label: "Comerciales", icon: Settings, x: 20, y: 58, color: "bg-pink-500" },
+  { id: 6, label: "Formalización", icon: Layers, x: 80, y: 58, color: "bg-purple-500" },
+  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 74, color: "bg-emerald-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 90, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 90, color: "bg-red-700" },
 ];
 
 // Connections: [fromIndex, toIndex]
 const connections: [number, number][] = [
   [0, 1], [0, 2],     // Inicio → Flujo, Reglas
   [1, 3], [2, 3],     // Flujo, Reglas → Riesgos
-  [3, 4], [3, 5],     // Riesgos → Formalización, Activos
-  [4, 6], [5, 6],     // Formalización, Activos → Procesos
-  [6, 7],             // Procesos → Reportes
-  [7, 8],             // Reportes → Cierre (single line)
+  [3, 4], [3, 5],     // Riesgos → Comerciales, Formalización
+  [4, 6], [5, 6],     // Comerciales, Formalización → Admin. Activos
+  [6, 7], [6, 8],     // Admin. Activos → Reportes, Cierre
 ];
 
 const W = 700;
