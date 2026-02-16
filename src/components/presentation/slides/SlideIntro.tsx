@@ -48,7 +48,9 @@ export const SlideIntro = () => {
       {/* Title */}
       <SubZoomContainer delay={0.1} direction="zoom">
         <div className="flex items-center justify-center gap-3 mb-2">
-          <img src={logoSysde} alt="Sysde" className="w-12 h-12 object-contain" />
+          <div className="inline-flex items-center justify-center w-12 h-12 rounded-xl bg-primary shadow-lg p-1.5">
+            <img src={logoSysde} alt="Sysde" className="w-full h-full object-contain" />
+          </div>
           <div className="text-left">
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Arrendamiento

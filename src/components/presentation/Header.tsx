@@ -17,7 +17,9 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
     >
       <div className="container mx-auto px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <img src={logoSysde} alt="Sysde" className="w-10 h-10 object-contain" />
+          <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center p-1">
+            <img src={logoSysde} alt="Sysde" className="w-full h-full object-contain" />
+          </div>
           <div>
             <h1 className="text-lg font-bold text-foreground">Sysde</h1>
             <p className="text-xs text-muted-foreground">Arrendamiento</p>
