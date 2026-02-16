@@ -6,62 +6,54 @@ import {
 import { SubZoomContainer } from "../SubZoomContainer";
 
 const nodes = [
-  { id: 1, label: "Inicio", icon: Play, x: 50, y: 8, color: "bg-red-600" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 20, y: 25, color: "bg-blue-500" },
-  { id: 3, label: "Reglas", icon: Scale, x: 80, y: 25, color: "bg-amber-500" },
-  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 42, color: "bg-cyan-500" },
-  { id: 5, label: "Comerciales", icon: Settings, x: 20, y: 58, color: "bg-pink-500" },
-  { id: 6, label: "Formalización", icon: Layers, x: 80, y: 58, color: "bg-purple-500" },
-  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 74, color: "bg-emerald-500" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 28, y: 90, color: "bg-indigo-500" },
-  { id: 9, label: "Cierre", icon: Flag, x: 72, y: 90, color: "bg-red-700" },
+  { id: 1, label: "Inicio", icon: Play, x: 50, y: 5, color: "bg-red-600" },
+  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 22, y: 20, color: "bg-blue-500" },
+  { id: 3, label: "Reglas", icon: Scale, x: 78, y: 20, color: "bg-amber-500" },
+  { id: 4, label: "Riesgos", icon: GitBranch, x: 50, y: 35, color: "bg-cyan-500" },
+  { id: 5, label: "Comerciales", icon: Settings, x: 22, y: 50, color: "bg-pink-500" },
+  { id: 6, label: "Formalización", icon: Layers, x: 78, y: 50, color: "bg-purple-500" },
+  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 50, y: 62, color: "bg-emerald-500" },
+  { id: 8, label: "Reportes", icon: BarChart3, x: 30, y: 78, color: "bg-indigo-500" },
+  { id: 9, label: "Cierre", icon: Flag, x: 70, y: 78, color: "bg-red-700" },
 ];
 
 // Connections: [fromIndex, toIndex]
 const connections: [number, number][] = [
-  [0, 1], [0, 2],     // Inicio → Flujo, Reglas
-  [1, 3], [2, 3],     // Flujo, Reglas → Riesgos
-  [3, 4], [3, 5],     // Riesgos → Comerciales, Formalización
-  [4, 6], [5, 6],     // Comerciales, Formalización → Admin. Activos
-  [6, 7], [6, 8],     // Admin. Activos → Reportes, Cierre
+  [0, 1], [0, 2],
+  [1, 3], [2, 3],
+  [3, 4], [3, 5],
+  [4, 6], [5, 6],
+  [6, 7], [6, 8],
 ];
 
-const W = 700;
-const H = 560;
+const W = 600;
+const H = 500;
 
 const getNodeCenter = (node: typeof nodes[0]) => ({
   cx: (node.x / 100) * W,
   cy: (node.y / 100) * H,
 });
 
-// Smooth cubic bezier between two node centers, offset from edges
 const getSmoothPath = (fromIdx: number, toIdx: number) => {
   const from = getNodeCenter(nodes[fromIdx]);
   const to = getNodeCenter(nodes[toIdx]);
 
-  // Offset start/end points away from node center (30px radius)
   const angle = Math.atan2(to.cy - from.cy, to.cx - from.cx);
-  const r = 30;
+  const r = 28;
   const x1 = from.cx + Math.cos(angle) * r;
   const y1 = from.cy + Math.sin(angle) * r;
   const endAngle = Math.atan2(from.cy - to.cy, from.cx - to.cx);
   const x2 = to.cx + Math.cos(endAngle) * r;
   const y2 = to.cy + Math.sin(endAngle) * r;
 
-  // Control points: pull towards vertical center
-  const dy = y2 - y1;
-  const dx = x2 - x1;
-  const cp1x = x1 + dx * 0.15;
-  const cp1y = y1 + dy * 0.55;
-  const cp2x = x2 - dx * 0.15;
-  const cp2y = y2 - dy * 0.55;
-
-  return `M ${x1} ${y1} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${x2} ${y2}`;
+  // Simple vertical-biased control points for clean curves
+  const midY = (y1 + y2) / 2;
+  return `M ${x1} ${y1} C ${x1} ${midY}, ${x2} ${midY}, ${x2} ${y2}`;
 };
 
 export const SlideIntro = () => {
   return (
-    <div className="w-full max-w-4xl mx-auto text-center px-4">
+    <div className="w-full max-w-3xl mx-auto text-center px-4">
       {/* Title */}
       <SubZoomContainer delay={0.1} direction="zoom">
         <div className="flex items-center justify-center gap-3 mb-2">
@@ -94,18 +86,18 @@ export const SlideIntro = () => {
                   key={`line-${i}`}
                   d={path}
                   stroke="hsl(var(--primary) / 0.3)"
-                  strokeWidth="2.5"
-                  strokeDasharray="10 6"
+                  strokeWidth="2"
+                  strokeDasharray="8 5"
                   strokeLinecap="round"
                   fill="none"
                   initial={{ pathLength: 0 }}
                   animate={{ pathLength: 1 }}
-                  transition={{ delay: 0.6 + i * 0.15, duration: 0.8, ease: "easeInOut" }}
+                  transition={{ delay: 0.6 + i * 0.12, duration: 0.7, ease: "easeInOut" }}
                 />
               );
             })}
 
-            {/* Animated dots traveling along paths */}
+            {/* Animated dots */}
             {connections.map(([fromIdx, toIdx], i) => {
               const path = getSmoothPath(fromIdx, toIdx);
               const pathId = `path-${i}`;
@@ -155,33 +147,30 @@ export const SlideIntro = () => {
                 initial={{ opacity: 0, scale: 0 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{
-                  delay: 0.3 + index * 0.12,
+                  delay: 0.3 + index * 0.1,
                   type: "spring",
                   stiffness: 300,
                   damping: 20,
                 }}
               >
-                {/* Badge number */}
                 <motion.div
                   className="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full bg-primary text-primary-foreground text-[10px] font-bold flex items-center justify-center z-20 shadow"
                   initial={{ scale: 0 }}
                   animate={{ scale: 1 }}
-                  transition={{ delay: 0.5 + index * 0.12, type: "spring" }}
+                  transition={{ delay: 0.5 + index * 0.1, type: "spring" }}
                 >
                   {node.id}
                 </motion.div>
 
-                {/* Icon box */}
                 <motion.div
-                  className={`w-12 h-12 md:w-14 md:h-14 rounded-xl ${node.color} flex items-center justify-center shadow-lg cursor-pointer relative z-10`}
+                  className={`w-11 h-11 md:w-13 md:h-13 rounded-xl ${node.color} flex items-center justify-center shadow-lg cursor-pointer relative z-10`}
                   whileHover={{ scale: 1.15, y: -4 }}
                   whileTap={{ scale: 0.95 }}
                 >
-                  <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
+                  <Icon className="w-5 h-5 md:w-6 md:h-6 text-white" />
                 </motion.div>
 
-                {/* Label */}
-                <span className="mt-1.5 px-2 py-0.5 bg-card/80 backdrop-blur-sm rounded text-[11px] md:text-xs font-semibold text-foreground shadow-sm border border-border/50 whitespace-nowrap">
+                <span className="mt-1 px-2 py-0.5 bg-card/80 backdrop-blur-sm rounded text-[10px] md:text-[11px] font-semibold text-foreground shadow-sm border border-border/50 whitespace-nowrap">
                   {node.label}
                 </span>
               </motion.div>
