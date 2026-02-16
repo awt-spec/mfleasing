@@ -61,14 +61,7 @@ export const SlideIntro = () => {
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
               Arrendamiento
             </h1>
-            <motion.a
-              href="#"
-              className="inline-block mt-2 px-8 py-3 bg-[#C42126] text-white font-bold text-base rounded-xl shadow-lg hover:shadow-2xl hover:bg-[#a81b1f] transition-all"
-              whileHover={{ scale: 1.07 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Agendar una Demo
-            </motion.a>
+            <p className="text-xs text-primary font-semibold">Mapa Funcional</p>
           </div>
         </div>
       </SubZoomContainer>
