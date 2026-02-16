@@ -40,9 +40,10 @@ const getNodePos = (node: typeof nodes[0]) => ({
 const getSmoothPath = (fromIdx: number, toIdx: number) => {
   const from = getNodePos(nodes[fromIdx]);
   const to = getNodePos(nodes[toIdx]);
-  const dy = Math.abs(to.cy - from.cy);
-  const offset = dy * 0.35;
-  return `M ${from.cx} ${from.cy + 20} C ${from.cx} ${from.cy + 20 + offset}, ${to.cx} ${to.cy - 20 - offset}, ${to.cx} ${to.cy - 20}`;
+  // Simple quadratic curve through midpoint - no offsets
+  const midX = (from.cx + to.cx) / 2;
+  const midY = (from.cy + to.cy) / 2;
+  return `M ${from.cx} ${from.cy} Q ${midX} ${midY}, ${to.cx} ${to.cy}`;
 };
 
 export const SlideIntro = () => {
