@@ -8,13 +8,15 @@ const flags: Record<Language, string> = {
   en: "🇺🇸",
   fr: "🇫🇷",
   ko: "🇰🇷",
+  pl: "🇵🇱",
+  bg: "🇧🇬",
 };
 
 export const LanguageSwitcher = () => {
   const { language, setLanguage, t } = useLanguage();
   const [open, setOpen] = useState(false);
 
-  const languages: Language[] = ["es", "en", "fr", "ko"];
+  const languages: Language[] = ["es", "en", "fr", "ko", "pl", "bg"];
 
   return (
     <div className="relative">

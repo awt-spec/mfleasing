@@ -5,6 +5,7 @@ import {
   Settings, BarChart3, Flag
 } from "lucide-react";
 import { SubZoomContainer } from "../SubZoomContainer";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 const clients = [
   "CMI", "DOS PINOS", "AFP CRECER", "BAC", "BANCO DE COSTA RICA", "UNICOMER",
@@ -12,16 +13,16 @@ const clients = [
   "CREDICEFI", "CAPITAL ACTIVO", "VALMEX", "CFE", "COOPECAR",
 ];
 
-const nodes = [
-  { id: 1, label: "Inicio", icon: Play, x: 300, y: 50, color: "#dc2626" },
-  { id: 2, label: "Flujo Operativo", icon: HelpCircle, x: 100, y: 150, color: "#3b82f6" },
-  { id: 3, label: "Reglas", icon: Scale, x: 500, y: 150, color: "#f59e0b" },
-  { id: 4, label: "Riesgos", icon: GitBranch, x: 300, y: 250, color: "#06b6d4" },
-  { id: 5, label: "Comerciales", icon: Settings, x: 100, y: 350, color: "#ec4899" },
-  { id: 6, label: "Formalización", icon: Layers, x: 500, y: 350, color: "#8b5cf6" },
-  { id: 7, label: "Admin. Activos", icon: LayoutGrid, x: 300, y: 450, color: "#10b981" },
-  { id: 8, label: "Reportes", icon: BarChart3, x: 100, y: 550, color: "#6366f1" },
-  { id: 9, label: "Cierre", icon: Flag, x: 500, y: 550, color: "#b91c1c" },
+const nodeConfig = [
+  { id: 1, labelKey: "node.inicio", icon: Play, x: 300, y: 50, color: "#dc2626" },
+  { id: 2, labelKey: "node.flujo", icon: HelpCircle, x: 100, y: 150, color: "#3b82f6" },
+  { id: 3, labelKey: "node.reglas", icon: Scale, x: 500, y: 150, color: "#f59e0b" },
+  { id: 4, labelKey: "node.riesgos", icon: GitBranch, x: 300, y: 250, color: "#06b6d4" },
+  { id: 5, labelKey: "node.comerciales", icon: Settings, x: 100, y: 350, color: "#ec4899" },
+  { id: 6, labelKey: "node.formalizacion", icon: Layers, x: 500, y: 350, color: "#8b5cf6" },
+  { id: 7, labelKey: "node.activos", icon: LayoutGrid, x: 300, y: 450, color: "#10b981" },
+  { id: 8, labelKey: "node.reportes", icon: BarChart3, x: 100, y: 550, color: "#6366f1" },
+  { id: 9, labelKey: "node.cierre", icon: Flag, x: 500, y: 550, color: "#b91c1c" },
 ];
 
 const connections: [number, number][] = [
@@ -37,8 +38,8 @@ const H = 610;
 const NODE_R = 24; // icon box half-size
 
 const getPath = (fi: number, ti: number) => {
-  const f = nodes[fi];
-  const t = nodes[ti];
+  const f = nodeConfig[fi];
+  const t = nodeConfig[ti];
   // Start from bottom of source, end at top of target
   const x1 = f.x, y1 = f.y + NODE_R;
   const x2 = t.x, y2 = t.y - NODE_R;
@@ -49,6 +50,10 @@ const getPath = (fi: number, ti: number) => {
 };
 
 export const SlideIntro = () => {
+  const { t } = useLanguage();
+
+  const nodes = nodeConfig.map(n => ({ ...n, label: t(n.labelKey) }));
+
   return (
     <div className="w-full max-w-3xl mx-auto text-center px-4">
       {/* Title */}
@@ -59,9 +64,9 @@ export const SlideIntro = () => {
           </div>
           <div className="text-left">
             <h1 className="text-2xl md:text-3xl font-extrabold text-foreground tracking-tight">
-              Arrendamiento
+              {t("map.title")}
             </h1>
-            <p className="text-xs text-primary font-semibold">Mapa Funcional</p>
+            <p className="text-xs text-primary font-semibold">{t("map.subtitle")}</p>
           </div>
         </div>
       </SubZoomContainer>
@@ -205,7 +210,7 @@ export const SlideIntro = () => {
 
       {/* Clients carousel */}
       <SubZoomContainer delay={2.0} direction="top" className="mt-1 overflow-hidden">
-        <p className="text-[10px] text-muted-foreground mb-2">Líderes que confían en Sysde</p>
+        <p className="text-[10px] text-muted-foreground mb-2">{t("map.clients")}</p>
         <div className="relative w-full overflow-hidden">
           <motion.div
             className="flex gap-8 whitespace-nowrap"
