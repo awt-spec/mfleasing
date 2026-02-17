@@ -46,14 +46,22 @@ const Index = () => {
   const [completedGates, setCompletedGates] = useState<Set<number>>(new Set());
   const [activeGate, setActiveGate] = useState<number | null>(null);
   const [pendingSlide, setPendingSlide] = useState<number | null>(null);
+  const [hasActiveOperation, setHasActiveOperation] = useState<boolean | null>(null);
   const totalSlides = slideConfig.length;
 
   const tryNavigate = useCallback((targetIndex: number) => {
     if (targetIndex < 0 || targetIndex >= totalSlides) return;
 
-    // Check if target slide has a gate that hasn't been completed
+    // If no active operation, skip gate 3 (system question) automatically
     const gateId = SLIDE_TO_GATE[targetIndex];
     if (gateId && !completedGates.has(targetIndex)) {
+      if (gateId === 3 && hasActiveOperation === false) {
+        // Auto-complete: no active operation means no system either
+        setCompletedGates(prev => new Set(prev).add(targetIndex));
+        setDirection(targetIndex > currentSlide ? 1 : -1);
+        setCurrentSlide(targetIndex);
+        return;
+      }
       setActiveGate(gateId);
       setPendingSlide(targetIndex);
       return;
@@ -61,17 +69,21 @@ const Index = () => {
 
     setDirection(targetIndex > currentSlide ? 1 : -1);
     setCurrentSlide(targetIndex);
-  }, [totalSlides, currentSlide, completedGates]);
+  }, [totalSlides, currentSlide, completedGates, hasActiveOperation]);
 
   const handleGateComplete = useCallback((answers: Record<string, string>) => {
     if (pendingSlide !== null) {
+      // Track if they have active operation from gate 1
+      if (activeGate === 1) {
+        setHasActiveOperation(answers.main === "yes");
+      }
       setCompletedGates(prev => new Set(prev).add(pendingSlide));
       setDirection(pendingSlide > currentSlide ? 1 : -1);
       setCurrentSlide(pendingSlide);
     }
     setActiveGate(null);
     setPendingSlide(null);
-  }, [pendingSlide, currentSlide]);
+  }, [pendingSlide, currentSlide, activeGate]);
 
   const goNext = useCallback(() => {
     tryNavigate(currentSlide + 1);
@@ -202,6 +214,7 @@ const Index = () => {
           open={true}
           onComplete={handleGateComplete}
           gateId={activeGate}
+          hasActiveOperation={hasActiveOperation ?? true}
         />
       )}
 
