@@ -14,15 +14,15 @@ const clients = [
 ];
 
 const nodeConfig = [
-  { id: 1, labelKey: "node.inicio", icon: Play, x: 300, y: 50, color: "#dc2626" },
-  { id: 2, labelKey: "node.flujo", icon: HelpCircle, x: 100, y: 150, color: "#3b82f6" },
-  { id: 3, labelKey: "node.reglas", icon: Scale, x: 500, y: 150, color: "#f59e0b" },
-  { id: 4, labelKey: "node.riesgos", icon: GitBranch, x: 300, y: 250, color: "#06b6d4" },
-  { id: 5, labelKey: "node.comerciales", icon: Settings, x: 100, y: 350, color: "#ec4899" },
-  { id: 6, labelKey: "node.formalizacion", icon: Layers, x: 500, y: 350, color: "#8b5cf6" },
-  { id: 7, labelKey: "node.activos", icon: LayoutGrid, x: 300, y: 450, color: "#10b981" },
-  { id: 8, labelKey: "node.reportes", icon: BarChart3, x: 100, y: 550, color: "#6366f1" },
-  { id: 9, labelKey: "node.cierre", icon: Flag, x: 500, y: 550, color: "#b91c1c" },
+  { id: 1, labelKey: "node.inicio", icon: Play, x: 300, y: 40, color: "#dc2626" },
+  { id: 2, labelKey: "node.flujo", icon: HelpCircle, x: 100, y: 120, color: "#3b82f6" },
+  { id: 3, labelKey: "node.reglas", icon: Scale, x: 500, y: 120, color: "#f59e0b" },
+  { id: 4, labelKey: "node.riesgos", icon: GitBranch, x: 300, y: 200, color: "#06b6d4" },
+  { id: 5, labelKey: "node.comerciales", icon: Settings, x: 100, y: 280, color: "#ec4899" },
+  { id: 6, labelKey: "node.formalizacion", icon: Layers, x: 500, y: 280, color: "#8b5cf6" },
+  { id: 7, labelKey: "node.activos", icon: LayoutGrid, x: 300, y: 360, color: "#10b981" },
+  { id: 8, labelKey: "node.reportes", icon: BarChart3, x: 100, y: 440, color: "#6366f1" },
+  { id: 9, labelKey: "node.cierre", icon: Flag, x: 500, y: 440, color: "#b91c1c" },
 ];
 
 const connections: [number, number][] = [
@@ -34,7 +34,7 @@ const connections: [number, number][] = [
 ];
 
 const W = 600;
-const H = 610;
+const H = 490;
 const NODE_R = 24; // icon box half-size
 
 const getPath = (fi: number, ti: number) => {

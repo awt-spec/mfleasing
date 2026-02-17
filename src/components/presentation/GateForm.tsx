@@ -30,10 +30,6 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
       setShowSub(true);
       return;
     }
-    if (gateId === 5 && value === "yes") {
-      setShowSub(true);
-      return;
-    }
     // Auto-advance
     doComplete(value, "");
   };
@@ -181,13 +177,8 @@ function getGateConfig(gateId: number, t: (k: string) => string, hasActiveOperat
       };
     case 5:
       return {
-        title: hasActiveOperation ? t("gate5.title") : t("gate5.title.prospect"),
+        title: hasActiveOperation ? t("gate6.title") : t("gate6.title.prospect"),
         options: [
-          { label: t("gate.yes"), value: "yes" },
-          { label: t("gate.no"), value: "no" },
-        ],
-        subTitle: hasActiveOperation ? t("gate6.title") : t("gate6.title.prospect"),
-        subOptions: [
           { label: "1–500", value: "1-500" },
           { label: "501–2,000", value: "501-2000" },
           { label: "2,001–10,000", value: "2001-10000" },
