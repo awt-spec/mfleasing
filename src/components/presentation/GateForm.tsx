@@ -6,9 +6,10 @@ interface GateFormProps {
   open: boolean;
   onComplete: (answers: Record<string, string>) => void;
   gateId: number;
+  hasActiveOperation: boolean;
 }
 
-export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
+export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateFormProps) => {
   const { t } = useLanguage();
   const [selected, setSelected] = useState<string>("");
   const [subSelected, setSubSelected] = useState<string>("");
@@ -42,7 +43,7 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
     doComplete(selected, value);
   };
 
-  const config = getGateConfig(gateId, t);
+  const config = getGateConfig(gateId, t, hasActiveOperation);
   if (!config) return null;
 
   return (
@@ -140,7 +141,7 @@ interface GateConfig {
   subOptions?: { label: string; value: string }[];
 }
 
-function getGateConfig(gateId: number, t: (k: string) => string): GateConfig | null {
+function getGateConfig(gateId: number, t: (k: string) => string, hasActiveOperation: boolean): GateConfig | null {
   switch (gateId) {
     case 1:
       return {
@@ -168,8 +169,8 @@ function getGateConfig(gateId: number, t: (k: string) => string): GateConfig | n
       };
     case 4:
       return {
-        title: t("gate4.title"),
-        subtitle: t("gate4.subtitle"),
+        title: hasActiveOperation ? t("gate4.title") : t("gate4.title.prospect"),
+        subtitle: hasActiveOperation ? t("gate4.subtitle") : t("gate4.subtitle.prospect"),
         options: [
           { label: "1–5", value: "1-5" },
           { label: "6–15", value: "6-15" },
@@ -180,12 +181,12 @@ function getGateConfig(gateId: number, t: (k: string) => string): GateConfig | n
       };
     case 5:
       return {
-        title: t("gate5.title"),
+        title: hasActiveOperation ? t("gate5.title") : t("gate5.title.prospect"),
         options: [
           { label: t("gate.yes"), value: "yes" },
           { label: t("gate.no"), value: "no" },
         ],
-        subTitle: t("gate6.title"),
+        subTitle: hasActiveOperation ? t("gate6.title") : t("gate6.title.prospect"),
         subOptions: [
           { label: "1–500", value: "1-500" },
           { label: "501–2,000", value: "501-2000" },
