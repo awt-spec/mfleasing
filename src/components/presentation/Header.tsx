@@ -1,11 +1,15 @@
 import { motion } from "framer-motion";
 import logoSysde from "@/assets/logo_sysde.png";
+import { LanguageSwitcher } from "./LanguageSwitcher";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 interface HeaderProps {
   showLogo?: boolean;
 }
 
 export const Header = ({ showLogo = true }: HeaderProps) => {
+  const { t } = useLanguage();
+
   if (!showLogo) return null;
 
   return (
@@ -21,12 +25,15 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
             <img src={logoSysde} alt="Sysde" className="w-full h-full object-contain" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-foreground">Sysde</h1>
-            <p className="text-xs text-muted-foreground">Arrendamiento</p>
+            <h1 className="text-lg font-bold text-foreground">{t("header.title")}</h1>
+            <p className="text-xs text-muted-foreground">{t("header.subtitle")}</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
-          <span className="px-5 py-2 bg-[#C42126] text-white font-bold text-sm rounded-lg shadow-md hover:bg-[#a81b1f] transition-colors cursor-pointer">Agendar una Demo</span>
+        <div className="flex items-center gap-3">
+          <LanguageSwitcher />
+          <span className="px-5 py-2 bg-[#C42126] text-white font-bold text-sm rounded-lg shadow-md hover:bg-[#a81b1f] transition-colors cursor-pointer">
+            {t("header.demo")}
+          </span>
         </div>
       </div>
     </motion.header>

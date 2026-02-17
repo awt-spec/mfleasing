@@ -4,6 +4,8 @@ import { Header } from "@/components/presentation/Header";
 import { BackgroundDecorations } from "@/components/presentation/BackgroundDecorations";
 import { NavigationControls } from "@/components/presentation/NavigationControls";
 import { Slide } from "@/components/presentation/Slide";
+import { GateForm } from "@/components/presentation/GateForm";
+import { useLanguage } from "@/contexts/LanguageContext";
 
 // Import all slide components
 import { SlideIntro } from "@/components/presentation/slides/SlideIntro";
@@ -16,37 +18,64 @@ import { SlideAdminActivos } from "@/components/presentation/slides/SlideAdminAc
 import { SlideReportes } from "@/components/presentation/slides/SlideReportes";
 import { SlideClosing } from "@/components/presentation/slides/SlideClosing";
 
-// Slide configuration with components and labels
-const slides = [
-  { id: 0, component: SlideIntro, label: "Inicio" },
-  { id: 1, component: SlideFlujoOperativo, label: "Flujo" },
-  { id: 2, component: SlideReglasNegocioNew, label: "Reglas" },
-  { id: 3, component: SlideAnalisisRiesgos, label: "Riesgos" },
-  { id: 4, component: SlideProcesosFlow, label: "Comerciales" },
-  { id: 5, component: SlideFormalizacion, label: "Formalización" },
-  { id: 6, component: SlideAdminActivos, label: "Activos" },
-  { id: 7, component: SlideReportes, label: "Reportes" },
-  { id: 8, component: SlideClosing, label: "Cierre" },
+// Slide configuration with components and label keys
+const slideConfig = [
+  { id: 0, component: SlideIntro, labelKey: "slide.inicio" },
+  { id: 1, component: SlideFlujoOperativo, labelKey: "slide.flujo" },
+  { id: 2, component: SlideReglasNegocioNew, labelKey: "slide.reglas" },
+  { id: 3, component: SlideAnalisisRiesgos, labelKey: "slide.riesgos" },
+  { id: 4, component: SlideProcesosFlow, labelKey: "slide.comerciales" },
+  { id: 5, component: SlideFormalizacion, labelKey: "slide.formalizacion" },
+  { id: 6, component: SlideAdminActivos, labelKey: "slide.activos" },
+  { id: 7, component: SlideReportes, labelKey: "slide.reportes" },
+  { id: 8, component: SlideClosing, labelKey: "slide.cierre" },
 ];
 
+// Mapping: slide index → gateId (which gate form to show before entering that slide)
+const SLIDE_TO_GATE: Record<number, number> = {
+  1: 1,  // Flujo Operativo → "¿Tienen operación activa de leasing?"
+  4: 3,  // Procesos Comerciales → "¿Tienen sistema para administrar leasing?"
+  5: 4,  // Formalización → "Usuarios que operan leasing"
+  6: 5,  // Admin Activos → "¿Contratos activos?"
+};
+
 const Index = () => {
+  const { t } = useLanguage();
   const [currentSlide, setCurrentSlide] = useState(0);
   const [direction, setDirection] = useState(0);
-  const totalSlides = slides.length;
+  const [completedGates, setCompletedGates] = useState<Set<number>>(new Set());
+  const [activeGate, setActiveGate] = useState<number | null>(null);
+  const [pendingSlide, setPendingSlide] = useState<number | null>(null);
+  const totalSlides = slideConfig.length;
 
-  const goToSlide = useCallback((index: number) => {
-    if (index >= 0 && index < totalSlides) {
-      setDirection(index > currentSlide ? 1 : -1);
-      setCurrentSlide(index);
+  const tryNavigate = useCallback((targetIndex: number) => {
+    if (targetIndex < 0 || targetIndex >= totalSlides) return;
+
+    // Check if target slide has a gate that hasn't been completed
+    const gateId = SLIDE_TO_GATE[targetIndex];
+    if (gateId && !completedGates.has(targetIndex)) {
+      setActiveGate(gateId);
+      setPendingSlide(targetIndex);
+      return;
     }
-  }, [totalSlides, currentSlide]);
+
+    setDirection(targetIndex > currentSlide ? 1 : -1);
+    setCurrentSlide(targetIndex);
+  }, [totalSlides, currentSlide, completedGates]);
+
+  const handleGateComplete = useCallback((answers: Record<string, string>) => {
+    if (pendingSlide !== null) {
+      setCompletedGates(prev => new Set(prev).add(pendingSlide));
+      setDirection(pendingSlide > currentSlide ? 1 : -1);
+      setCurrentSlide(pendingSlide);
+    }
+    setActiveGate(null);
+    setPendingSlide(null);
+  }, [pendingSlide, currentSlide]);
 
   const goNext = useCallback(() => {
-    if (currentSlide < totalSlides - 1) {
-      setDirection(1);
-      setCurrentSlide(prev => prev + 1);
-    }
-  }, [currentSlide, totalSlides]);
+    tryNavigate(currentSlide + 1);
+  }, [currentSlide, tryNavigate]);
 
   const goPrev = useCallback(() => {
     if (currentSlide > 0) {
@@ -71,6 +100,7 @@ const Index = () => {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (activeGate !== null) return; // Block keyboard nav while gate is open
       switch (e.key) {
         case "ArrowRight":
         case "ArrowDown":
@@ -89,7 +119,7 @@ const Index = () => {
           break;
         case "End":
           e.preventDefault();
-          goToSlide(totalSlides - 1);
+          tryNavigate(totalSlides - 1);
           break;
         case "f":
         case "F":
@@ -101,7 +131,7 @@ const Index = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNext, goPrev, goHome, goToSlide, totalSlides, toggleFullscreen]);
+  }, [goNext, goPrev, goHome, tryNavigate, totalSlides, toggleFullscreen, activeGate]);
 
   // Touch/swipe navigation
   useEffect(() => {
@@ -116,11 +146,8 @@ const Index = () => {
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 50) {
-        if (diff > 0) {
-          goNext();
-        } else {
-          goPrev();
-        }
+        if (diff > 0) goNext();
+        else goPrev();
       }
     };
 
@@ -132,9 +159,8 @@ const Index = () => {
     };
   }, [goNext, goPrev]);
 
-  const CurrentSlideComponent = slides[currentSlide].component;
+  const CurrentSlideComponent = slideConfig[currentSlide].component;
 
-  // Slide animation variants
   const slideVariants = {
     enter: (direction: number) => ({
       x: direction > 0 ? 300 : -300,
@@ -170,6 +196,15 @@ const Index = () => {
         canGoNext={currentSlide < totalSlides - 1}
       />
 
+      {/* Gate Form Modal */}
+      {activeGate !== null && (
+        <GateForm
+          open={true}
+          onComplete={handleGateComplete}
+          gateId={activeGate}
+        />
+      )}
+
       <main className="relative z-10 perspective-container" style={{ perspective: "1200px" }}>
         <AnimatePresence mode="wait" custom={direction}>
           <motion.div
@@ -200,7 +235,6 @@ const Index = () => {
         animate={{ y: 0 }}
         transition={{ delay: 0.5 }}
       >
-        {/* Progress line */}
         <div className="relative h-1 bg-muted mx-16">
           <motion.div
             className="absolute left-0 top-0 h-full bg-primary"
@@ -210,16 +244,15 @@ const Index = () => {
           />
         </div>
 
-        {/* Dots with labels */}
         <div className="flex justify-between items-start px-4 py-4">
-          {slides.map((slide, index) => {
+          {slideConfig.map((slide, index) => {
             const isActive = index === currentSlide;
             const isPast = index < currentSlide;
             
             return (
               <button
                 key={slide.id}
-                onClick={() => goToSlide(index)}
+                onClick={() => tryNavigate(index)}
                 className="flex flex-col items-center gap-2 group"
               >
                 <motion.div
@@ -241,7 +274,7 @@ const Index = () => {
                     ? "text-primary" 
                     : "text-muted-foreground opacity-0 group-hover:opacity-100"
                 }`}>
-                  {slide.label}
+                  {t(slide.labelKey)}
                 </span>
               </button>
             );
