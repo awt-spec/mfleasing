@@ -14,12 +14,17 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
   const [subSelected, setSubSelected] = useState<string>("");
   const [showSub, setShowSub] = useState(false);
 
+  const doComplete = (main: string, sub: string) => {
+    onComplete({ main, sub });
+    setSelected("");
+    setSubSelected("");
+    setShowSub(false);
+  };
+
   const handleSelect = (value: string) => {
     setSelected(value);
-    setShowSub(false);
     setSubSelected("");
 
-    // Gates with sub-questions
     if (gateId === 1 && value === "no") {
       setShowSub(true);
       return;
@@ -28,15 +33,13 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
       setShowSub(true);
       return;
     }
+    // Auto-advance
+    doComplete(value, "");
   };
 
-  const handleContinue = () => {
-    if (!selected) return;
-    if (showSub && !subSelected) return;
-    onComplete({ main: selected, sub: subSelected });
-    setSelected("");
-    setSubSelected("");
-    setShowSub(false);
+  const handleSubSelect = (value: string) => {
+    setSubSelected(value);
+    doComplete(selected, value);
   };
 
   const config = getGateConfig(gateId, t);
@@ -51,10 +54,7 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
         >
-          {/* Backdrop */}
           <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
-
-          {/* Form Card */}
           <motion.div
             className="relative bg-card border border-border rounded-2xl shadow-2xl p-8 max-w-md w-full mx-4"
             initial={{ scale: 0.85, opacity: 0, y: 30 }}
@@ -62,17 +62,13 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
             exit={{ scale: 0.85, opacity: 0, y: 30 }}
             transition={{ type: "spring", damping: 25, stiffness: 300 }}
           >
-            {/* Sysde accent bar */}
             <div className="absolute top-0 left-0 right-0 h-1 bg-[#C42126] rounded-t-2xl" />
-
-            <h3 className="text-lg font-bold text-foreground mb-1 mt-2">
-              {config.title}
-            </h3>
+            <h3 className="text-lg font-bold text-foreground mb-1 mt-2">{config.title}</h3>
             {config.subtitle && (
               <p className="text-sm text-muted-foreground mb-4">{config.subtitle}</p>
             )}
 
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2">
               {config.options.map((opt) => (
                 <button
                   key={opt.value}
@@ -87,9 +83,7 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
                     <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                       selected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
                     }`}>
-                      {selected === opt.value && (
-                        <span className="w-2 h-2 rounded-full bg-[#C42126]" />
-                      )}
+                      {selected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
                     </span>
                     {opt.label}
                   </span>
@@ -97,7 +91,6 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
               ))}
             </div>
 
-            {/* Sub-question */}
             <AnimatePresence>
               {showSub && config.subOptions && (
                 <motion.div
@@ -106,14 +99,12 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
                   exit={{ height: 0, opacity: 0 }}
                   className="overflow-hidden"
                 >
-                  <p className="text-sm font-semibold text-foreground mb-2 mt-2">
-                    {config.subTitle}
-                  </p>
-                  <div className="space-y-2 mb-4">
+                  <p className="text-sm font-semibold text-foreground mb-2 mt-4">{config.subTitle}</p>
+                  <div className="space-y-2">
                     {config.subOptions.map((opt) => (
                       <button
                         key={opt.value}
-                        onClick={() => setSubSelected(opt.value)}
+                        onClick={() => handleSubSelect(opt.value)}
                         className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
                           subSelected === opt.value
                             ? "border-[#C42126] bg-[#C42126]/10 text-foreground"
@@ -124,9 +115,7 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
                           <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
                             subSelected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
                           }`}>
-                            {subSelected === opt.value && (
-                              <span className="w-2 h-2 rounded-full bg-[#C42126]" />
-                            )}
+                            {subSelected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
                           </span>
                           {opt.label}
                         </span>
@@ -136,14 +125,6 @@ export const GateForm = ({ open, onComplete, gateId }: GateFormProps) => {
                 </motion.div>
               )}
             </AnimatePresence>
-
-            <button
-              onClick={handleContinue}
-              disabled={!selected || (showSub && !subSelected)}
-              className="w-full py-3 bg-[#C42126] text-white font-bold rounded-xl shadow-md hover:bg-[#a81b1f] transition-colors disabled:opacity-40 disabled:cursor-not-allowed mt-2"
-            >
-              {t("gate.continue")}
-            </button>
           </motion.div>
         </motion.div>
       )}
