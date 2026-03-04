@@ -72,7 +72,7 @@ const Index = () => {
 
     // If no active operation, skip gate 3 (system question) automatically
     const gateId = SLIDE_TO_GATE[targetIndex];
-    if (gateId && !completedGates.has(targetIndex)) {
+    if (gateId !== undefined && !completedGates.has(targetIndex)) {
       if (gateId === 3 && hasActiveOperation === false) {
         // Auto-complete: no active operation means no system either
         setCompletedGates(prev => new Set(prev).add(targetIndex));
