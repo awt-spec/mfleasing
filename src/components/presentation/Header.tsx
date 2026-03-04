@@ -29,12 +29,7 @@ export const Header = ({ showLogo = true }: HeaderProps) => {
             <p className="text-xs text-muted-foreground">{t("header.subtitle")}</p>
           </div>
         </div>
-        <div className="flex items-center gap-3">
-          <LanguageSwitcher />
-          <span className="px-5 py-2 bg-[#C42126] text-white font-bold text-sm rounded-lg shadow-md hover:bg-[#a81b1f] transition-colors cursor-pointer">
-            {t("header.demo")}
-          </span>
-        </div>
+        <LanguageSwitcher />
       </div>
     </motion.header>
   );
