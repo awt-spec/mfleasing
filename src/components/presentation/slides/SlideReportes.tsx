@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { FileBarChart, Database, FileText, PieChart, Users, Building } from "lucide-react";
+import { FileBarChart, Database, FileText, PieChart, Users, Building, Landmark, ShieldCheck } from "lucide-react";
 import { SubZoomContainer, StaggerContainer, StaggerItem } from "../SubZoomContainer";
 
 export const SlideReportes = () => {
@@ -89,8 +89,87 @@ export const SlideReportes = () => {
         </SubZoomContainer>
       </div>
 
+      {/* SOFOM & SOFIPO Reports */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <SubZoomContainer delay={0.9} direction="left">
+          <motion.div
+            className="p-6 rounded-2xl bg-card border border-border shadow-lg h-full"
+            whileHover={{ y: -4 }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                <Landmark className="w-6 h-6 text-amber-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Reportes SOFOM</h3>
+                <p className="text-xs text-muted-foreground">Sociedad Financiera de Objeto Múltiple</p>
+              </div>
+            </div>
+            <StaggerContainer className="space-y-2" staggerDelay={0.08} initialDelay={1.0}>
+              {[
+                "R01 – Catálogo mínimo",
+                "R04 – Cartera de crédito",
+                "R08 – Captación",
+                "R12 – Operaciones de crédito (SIC)",
+                "R13 – Riesgo de mercado",
+                "R14 – Riesgo de liquidez",
+                "Reporte CNBV Regulatorio",
+                "PLD / Prevención de lavado",
+              ].map((item) => (
+                <StaggerItem key={item}>
+                  <motion.div
+                    className="p-2 bg-amber-50 dark:bg-amber-950/30 rounded-lg text-xs font-medium"
+                    whileHover={{ x: 4 }}
+                  >
+                    {item}
+                  </motion.div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </motion.div>
+        </SubZoomContainer>
+
+        <SubZoomContainer delay={1.0} direction="right">
+          <motion.div
+            className="p-6 rounded-2xl bg-card border border-border shadow-lg h-full"
+            whileHover={{ y: -4 }}
+          >
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-teal-500/20 flex items-center justify-center">
+                <ShieldCheck className="w-6 h-6 text-teal-600" />
+              </div>
+              <div>
+                <h3 className="text-lg font-bold">Reportes SOFIPO</h3>
+                <p className="text-xs text-muted-foreground">Sociedad Financiera Popular</p>
+              </div>
+            </div>
+            <StaggerContainer className="space-y-2" staggerDelay={0.08} initialDelay={1.1}>
+              {[
+                "R01 – Catálogo mínimo",
+                "R04 – Cartera de crédito",
+                "R08 – Captación / Ahorro",
+                "A-0411 – Calificación de cartera",
+                "Reporte de operaciones (CONDUSEF)",
+                "Reporte CNBV Regulatorio",
+                "PLD / Prevención de lavado",
+                "Estados financieros dictaminados",
+              ].map((item) => (
+                <StaggerItem key={item}>
+                  <motion.div
+                    className="p-2 bg-teal-50 dark:bg-teal-950/30 rounded-lg text-xs font-medium"
+                    whileHover={{ x: 4 }}
+                  >
+                    {item}
+                  </motion.div>
+                </StaggerItem>
+              ))}
+            </StaggerContainer>
+          </motion.div>
+        </SubZoomContainer>
+      </div>
+
       {/* Bottom section */}
-      <SubZoomContainer delay={1.1} direction="zoom">
+      <SubZoomContainer delay={1.3} direction="zoom">
         <div className="p-6 rounded-2xl bg-gradient-to-r from-muted/30 via-muted/50 to-muted/30 border border-border">
           <h3 className="font-bold text-lg mb-4 text-center">Información de Origen</h3>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -105,7 +184,7 @@ export const SlideReportes = () => {
                 className="p-4 bg-card rounded-xl text-center shadow-sm"
                 initial={{ opacity: 0, scale: 0.8 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 1.3 + index * 0.1 }}
+                transition={{ delay: 1.5 + index * 0.1 }}
                 whileHover={{ y: -2 }}
               >
                 <item.icon className="w-6 h-6 text-primary mx-auto mb-2" />
