@@ -15,6 +15,11 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
   const [subSelected, setSubSelected] = useState<string>("");
   const [showSub, setShowSub] = useState(false);
 
+  // Contact form fields
+  const [company, setCompany] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+
   const doComplete = (main: string, sub: string) => {
     onComplete({ main, sub });
     setSelected("");
@@ -30,7 +35,6 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
       setShowSub(true);
       return;
     }
-    // Auto-advance
     doComplete(value, "");
   };
 
@@ -39,8 +43,15 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
     doComplete(selected, value);
   };
 
+  const handleContactSubmit = () => {
+    if (!company.trim() || !email.trim()) return;
+    onComplete({ main: company.trim(), email: email.trim(), whatsapp: whatsapp.trim() });
+  };
+
   const config = getGateConfig(gateId, t, hasActiveOperation);
   if (!config) return null;
+
+  const isContactGate = gateId === 0;
 
   return (
     <AnimatePresence>
@@ -65,63 +76,107 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
               <p className="text-sm text-muted-foreground mb-4">{config.subtitle}</p>
             )}
 
-            <div className="space-y-2">
-              {config.options.map((opt) => (
+            {isContactGate ? (
+              <div className="space-y-3">
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("gate0.company")}</label>
+                  <input
+                    type="text"
+                    value={company}
+                    onChange={(e) => setCompany(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:border-[#C42126] transition-colors"
+                    placeholder={t("gate0.company.placeholder")}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("gate0.email")}</label>
+                  <input
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:border-[#C42126] transition-colors"
+                    placeholder={t("gate0.email.placeholder")}
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-muted-foreground mb-1 block">{t("gate0.whatsapp")}</label>
+                  <input
+                    type="tel"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                    className="w-full px-4 py-3 rounded-xl border border-border bg-card text-foreground text-sm focus:outline-none focus:border-[#C42126] transition-colors"
+                    placeholder={t("gate0.whatsapp.placeholder")}
+                  />
+                </div>
                 <button
-                  key={opt.value}
-                  onClick={() => handleSelect(opt.value)}
-                  className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
-                    selected === opt.value
-                      ? "border-[#C42126] bg-[#C42126]/10 text-foreground"
-                      : "border-border bg-card hover:border-[#C42126]/40 text-foreground/80"
-                  }`}
+                  onClick={handleContactSubmit}
+                  disabled={!company.trim() || !email.trim()}
+                  className="w-full mt-2 px-4 py-3 rounded-xl bg-[#C42126] text-white font-bold text-sm disabled:opacity-40 hover:bg-[#a81b1f] transition-colors"
                 >
-                  <span className="inline-flex items-center gap-2">
-                    <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                      selected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
-                    }`}>
-                      {selected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
-                    </span>
-                    {opt.label}
-                  </span>
+                  {t("gate0.continue")}
                 </button>
-              ))}
-            </div>
-
-            <AnimatePresence>
-              {showSub && config.subOptions && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  className="overflow-hidden"
-                >
-                  <p className="text-sm font-semibold text-foreground mb-2 mt-4">{config.subTitle}</p>
-                  <div className="space-y-2">
-                    {config.subOptions.map((opt) => (
-                      <button
-                        key={opt.value}
-                        onClick={() => handleSubSelect(opt.value)}
-                        className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
-                          subSelected === opt.value
-                            ? "border-[#C42126] bg-[#C42126]/10 text-foreground"
-                            : "border-border bg-card hover:border-[#C42126]/40 text-foreground/80"
-                        }`}
-                      >
-                        <span className="inline-flex items-center gap-2">
-                          <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
-                            subSelected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
-                          }`}>
-                            {subSelected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
-                          </span>
-                          {opt.label}
+              </div>
+            ) : (
+              <>
+                <div className="space-y-2">
+                  {config.options!.map((opt) => (
+                    <button
+                      key={opt.value}
+                      onClick={() => handleSelect(opt.value)}
+                      className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
+                        selected === opt.value
+                          ? "border-[#C42126] bg-[#C42126]/10 text-foreground"
+                          : "border-border bg-card hover:border-[#C42126]/40 text-foreground/80"
+                      }`}
+                    >
+                      <span className="inline-flex items-center gap-2">
+                        <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                          selected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
+                        }`}>
+                          {selected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
                         </span>
-                      </button>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+                        {opt.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                <AnimatePresence>
+                  {showSub && config.subOptions && (
+                    <motion.div
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: "auto", opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <p className="text-sm font-semibold text-foreground mb-2 mt-4">{config.subTitle}</p>
+                      <div className="space-y-2">
+                        {config.subOptions.map((opt) => (
+                          <button
+                            key={opt.value}
+                            onClick={() => handleSubSelect(opt.value)}
+                            className={`w-full text-left px-4 py-3 rounded-xl border transition-all text-sm font-medium ${
+                              subSelected === opt.value
+                                ? "border-[#C42126] bg-[#C42126]/10 text-foreground"
+                                : "border-border bg-card hover:border-[#C42126]/40 text-foreground/80"
+                            }`}
+                          >
+                            <span className="inline-flex items-center gap-2">
+                              <span className={`w-4 h-4 rounded-full border-2 flex items-center justify-center flex-shrink-0 ${
+                                subSelected === opt.value ? "border-[#C42126]" : "border-muted-foreground/40"
+                              }`}>
+                                {subSelected === opt.value && <span className="w-2 h-2 rounded-full bg-[#C42126]" />}
+                              </span>
+                              {opt.label}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </>
+            )}
           </motion.div>
         </motion.div>
       )}
@@ -132,13 +187,18 @@ export const GateForm = ({ open, onComplete, gateId, hasActiveOperation }: GateF
 interface GateConfig {
   title: string;
   subtitle?: string;
-  options: { label: string; value: string }[];
+  options?: { label: string; value: string }[];
   subTitle?: string;
   subOptions?: { label: string; value: string }[];
 }
 
 function getGateConfig(gateId: number, t: (k: string) => string, hasActiveOperation: boolean): GateConfig | null {
   switch (gateId) {
+    case 0:
+      return {
+        title: t("gate0.title"),
+        subtitle: t("gate0.subtitle"),
+      };
     case 1:
       return {
         title: t("gate1.title"),

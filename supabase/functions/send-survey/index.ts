@@ -11,25 +11,41 @@ serve(async (req) => {
   }
 
   try {
-    const { answers } = await req.json();
+    const { answers, contact, isSummary } = await req.json();
     const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
     if (!RESEND_API_KEY) {
       throw new Error('RESEND_API_KEY not configured');
     }
 
-    // Build email body from answers
+    const contactName = contact?.company || 'Desconocido';
+    const contactEmail = contact?.email || '';
+    const contactWhatsapp = contact?.whatsapp || '';
+
     const rows = Object.entries(answers)
       .map(([key, value]) => `<tr><td style="padding:8px 12px;border:1px solid #e5e7eb;font-weight:600;">${key}</td><td style="padding:8px 12px;border:1px solid #e5e7eb;">${value}</td></tr>`)
       .join('');
 
+    const contactSection = contactEmail ? `
+      <div style="margin-bottom:16px;padding:12px;background:#f9fafb;border-radius:8px;">
+        <p style="margin:0;font-size:13px;"><strong>Empresa:</strong> ${contactName}</p>
+        <p style="margin:4px 0 0;font-size:13px;"><strong>Email:</strong> ${contactEmail}</p>
+        ${contactWhatsapp ? `<p style="margin:4px 0 0;font-size:13px;"><strong>WhatsApp:</strong> ${contactWhatsapp}</p>` : ''}
+      </div>
+    ` : '';
+
+    const subject = isSummary
+      ? `📋 Resumen completo - ${contactName} - MF Leasing`
+      : `📩 Nueva respuesta de ${contactName} - MF Leasing`;
+
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:600px;margin:0 auto;">
         <div style="background:#C42126;padding:20px;border-radius:8px 8px 0 0;">
-          <h1 style="color:white;margin:0;font-size:20px;">Sysde - Nueva respuesta de encuesta</h1>
+          <h1 style="color:white;margin:0;font-size:20px;">${isSummary ? 'Resumen completo de encuesta' : 'Nueva respuesta de encuesta'}</h1>
         </div>
         <div style="padding:20px;background:#ffffff;border:1px solid #e5e7eb;border-top:none;border-radius:0 0 8px 8px;">
-          <table style="width:100%;border-collapse:collapse;margin-top:10px;">
+          ${contactSection}
+          <table style="width:100%;border-collapse:collapse;">
             <thead>
               <tr style="background:#f9fafb;">
                 <th style="padding:8px 12px;border:1px solid #e5e7eb;text-align:left;">Pregunta</th>
@@ -52,7 +68,7 @@ serve(async (req) => {
       body: JSON.stringify({
         from: 'Sysde Leasing <onboarding@resend.dev>',
         to: ['awcuentas@gmail.com'],
-        subject: 'Nueva respuesta de encuesta - MF Leasing',
+        subject,
         html,
       }),
     });

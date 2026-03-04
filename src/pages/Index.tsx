@@ -35,7 +35,8 @@ const slideConfig = [
 
 // Mapping: slide index → gateId (which gate form to show before entering that slide)
 const SLIDE_TO_GATE: Record<number, number> = {
-  1: 1,  // Flujo Operativo → "¿Tienen operación activa de leasing?"
+  1: 0,  // Intro → Contacto (empresa, email, WhatsApp)
+  2: 1,  // Reglas de Negocio → "¿Tienen operación activa de leasing?"
   4: 3,  // Procesos Comerciales → "¿Tienen sistema para administrar leasing?"
   5: 4,  // Formalización → "Usuarios que operan leasing"
   6: 5,  // Admin Activos → "¿Contratos activos?"
@@ -52,16 +53,17 @@ const Index = () => {
   const allAnswers = useRef<Record<string, string>>({});
   const totalSlides = slideConfig.length;
 
-  const sendSurvey = useCallback(async (answers: Record<string, string>) => {
+  const contactInfo = useRef<{ company: string; email: string; whatsapp: string }>({ company: '', email: '', whatsapp: '' });
+
+  const sendSurvey = useCallback(async (answers: Record<string, string>, isSummary = false) => {
     try {
       const { data, error } = await supabase.functions.invoke('send-survey', {
-        body: { answers },
+        body: { answers, contact: contactInfo.current, isSummary },
       });
       if (error) throw error;
       console.log('Survey sent successfully', data);
     } catch (err) {
       console.error('Error sending survey:', err);
-      toast.error('Error al enviar la encuesta');
     }
   }, []);
 
@@ -88,6 +90,7 @@ const Index = () => {
   }, [totalSlides, currentSlide, completedGates, hasActiveOperation]);
 
   const gateLabels: Record<number, string> = {
+    0: "Datos de contacto",
     1: "Operación activa de leasing",
     3: "Sistema para administrar leasing",
     4: "Usuarios que operan leasing",
@@ -96,21 +99,31 @@ const Index = () => {
 
   const handleGateComplete = useCallback((answers: Record<string, string>) => {
     if (pendingSlide !== null) {
-      if (activeGate === 1) {
-        setHasActiveOperation(answers.main === "yes");
+      // Contact gate
+      if (activeGate === 0) {
+        contactInfo.current = { company: answers.main, email: answers.email || '', whatsapp: answers.whatsapp || '' };
+        allAnswers.current["Empresa"] = answers.main;
+        allAnswers.current["Email"] = answers.email || '';
+        allAnswers.current["WhatsApp"] = answers.whatsapp || '';
+        sendSurvey({ "Empresa": answers.main, "Email": answers.email || '', "WhatsApp": answers.whatsapp || '' });
+      } else {
+        if (activeGate === 1) {
+          setHasActiveOperation(answers.main === "yes");
+        }
+        const label = gateLabels[activeGate!] || `Gate ${activeGate}`;
+        const value = answers.sub ? `${answers.main} → ${answers.sub}` : answers.main;
+        allAnswers.current[label] = value;
+        // Send individual answer
+        sendSurvey({ [label]: value });
       }
-
-      // Accumulate answers
-      const label = gateLabels[activeGate!] || `Gate ${activeGate}`;
-      allAnswers.current[label] = answers.sub ? `${answers.main} → ${answers.sub}` : answers.main;
 
       setCompletedGates(prev => new Set(prev).add(pendingSlide));
       setDirection(pendingSlide > currentSlide ? 1 : -1);
       setCurrentSlide(pendingSlide);
 
-      // Send survey after last gate (gate 5)
+      // Send summary after last gate (gate 5)
       if (activeGate === 5) {
-        sendSurvey(allAnswers.current);
+        sendSurvey(allAnswers.current, true);
       }
     }
     setActiveGate(null);
