@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useRef } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import { Header } from "@/components/presentation/Header";
 import { BackgroundDecorations } from "@/components/presentation/BackgroundDecorations";
@@ -6,6 +6,8 @@ import { NavigationControls } from "@/components/presentation/NavigationControls
 import { Slide } from "@/components/presentation/Slide";
 import { GateForm } from "@/components/presentation/GateForm";
 import { useLanguage } from "@/contexts/LanguageContext";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 // Import all slide components
 import { SlideIntro } from "@/components/presentation/slides/SlideIntro";
@@ -47,7 +49,21 @@ const Index = () => {
   const [activeGate, setActiveGate] = useState<number | null>(null);
   const [pendingSlide, setPendingSlide] = useState<number | null>(null);
   const [hasActiveOperation, setHasActiveOperation] = useState<boolean | null>(null);
+  const allAnswers = useRef<Record<string, string>>({});
   const totalSlides = slideConfig.length;
+
+  const sendSurvey = useCallback(async (answers: Record<string, string>) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('send-survey', {
+        body: { answers },
+      });
+      if (error) throw error;
+      console.log('Survey sent successfully', data);
+    } catch (err) {
+      console.error('Error sending survey:', err);
+      toast.error('Error al enviar la encuesta');
+    }
+  }, []);
 
   const tryNavigate = useCallback((targetIndex: number) => {
     if (targetIndex < 0 || targetIndex >= totalSlides) return;
@@ -71,19 +87,35 @@ const Index = () => {
     setCurrentSlide(targetIndex);
   }, [totalSlides, currentSlide, completedGates, hasActiveOperation]);
 
+  const gateLabels: Record<number, string> = {
+    1: "Operación activa de leasing",
+    3: "Sistema para administrar leasing",
+    4: "Usuarios que operan leasing",
+    5: "Contratos activos de leasing",
+  };
+
   const handleGateComplete = useCallback((answers: Record<string, string>) => {
     if (pendingSlide !== null) {
-      // Track if they have active operation from gate 1
       if (activeGate === 1) {
         setHasActiveOperation(answers.main === "yes");
       }
+
+      // Accumulate answers
+      const label = gateLabels[activeGate!] || `Gate ${activeGate}`;
+      allAnswers.current[label] = answers.sub ? `${answers.main} → ${answers.sub}` : answers.main;
+
       setCompletedGates(prev => new Set(prev).add(pendingSlide));
       setDirection(pendingSlide > currentSlide ? 1 : -1);
       setCurrentSlide(pendingSlide);
+
+      // Send survey after last gate (gate 5)
+      if (activeGate === 5) {
+        sendSurvey(allAnswers.current);
+      }
     }
     setActiveGate(null);
     setPendingSlide(null);
-  }, [pendingSlide, currentSlide, activeGate]);
+  }, [pendingSlide, currentSlide, activeGate, sendSurvey]);
 
   const goNext = useCallback(() => {
     tryNavigate(currentSlide + 1);
