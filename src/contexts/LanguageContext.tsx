@@ -403,6 +403,7 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip4.desc": "← → Спейс за навигация, F за цял екран",
     "onboarding.dismiss": "Разбрах!",
   },
+};
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
