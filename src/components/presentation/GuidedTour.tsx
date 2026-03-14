@@ -46,7 +46,11 @@ const tourSteps: TourStep[] = [
 ];
 
 const TOOLTIP_WIDTH = 288; // w-72 = 18rem = 288px
+const TOOLTIP_HEIGHT = 220;
 const TOOLTIP_MARGIN = 16;
+
+const clamp = (value: number, min: number, max: number) =>
+  Math.min(Math.max(value, min), max);
 
 const getTooltipStyle = (
   rect: DOMRect,
@@ -56,66 +60,32 @@ const getTooltipStyle = (
   const vw = window.innerWidth;
   const vh = window.innerHeight;
 
-  let left: number;
-  let top: number;
+  let left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+  let top = rect.bottom + gap;
 
   switch (position) {
     case "top":
-      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
-      top = rect.top - gap;
-      // If not enough room above, place it higher in the viewport
-      const tooltipEstimatedHeight = 180;
-      if (top - tooltipEstimatedHeight < TOOLTIP_MARGIN) {
-        top = TOOLTIP_MARGIN + tooltipEstimatedHeight;
-      }
-      return {
-        left: Math.max(TOOLTIP_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN)),
-        top,
-        transform: "translateY(-100%)",
-      };
+      top = rect.top - gap - TOOLTIP_HEIGHT;
+      break;
     case "bottom":
-      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
       top = rect.bottom + gap;
-      return {
-        left: Math.max(TOOLTIP_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN)),
-        top: Math.min(top, vh - 200),
-        transform: "translateY(0)",
-      };
+      break;
     case "left":
       left = rect.left - gap - TOOLTIP_WIDTH;
-      top = rect.top + rect.height / 2;
-      // If it would go off-screen left, flip to right
-      if (left < TOOLTIP_MARGIN) {
-        return {
-          left: rect.right + gap,
-          top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
-          transform: "translateY(-50%)",
-        };
-      }
-      return {
-        left,
-        top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
-        transform: "translateY(-50%)",
-      };
+      top = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
+      break;
     case "right":
       left = rect.right + gap;
-      top = rect.top + rect.height / 2;
-      // If it would go off-screen right, flip to left
-      if (left + TOOLTIP_WIDTH > vw - TOOLTIP_MARGIN) {
-        return {
-          left: rect.left - gap - TOOLTIP_WIDTH,
-          top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
-          transform: "translateY(-50%)",
-        };
-      }
-      return {
-        left,
-        top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
-        transform: "translateY(-50%)",
-      };
+      top = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
+      break;
     default:
-      return {};
+      break;
   }
+
+  return {
+    left: clamp(left, TOOLTIP_MARGIN, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN),
+    top: clamp(top, TOOLTIP_MARGIN, vh - TOOLTIP_HEIGHT - TOOLTIP_MARGIN),
+  };
 };
 
 const getHighlightStyle = (rect: DOMRect): React.CSSProperties => ({
