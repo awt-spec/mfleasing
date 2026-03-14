@@ -335,7 +335,7 @@ const Index = () => {
             return (
               <button
                 key={slide.id}
-                onClick={() => tryNavigate(index)}
+                onClick={() => !tourActive && tryNavigate(index)}
                 className="flex flex-col items-center gap-2 group"
               >
                 <motion.div
