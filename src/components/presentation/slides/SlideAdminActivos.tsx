@@ -575,7 +575,18 @@ export const SlideAdminActivos = () => {
   const [selectedProcess, setSelectedProcess] = useState<string | null>(null);
   const activeProcess = topProcesses.find(p => p.id === selectedProcess);
 
-  return (
+  // Listen for tour events to enter/exit sub-zoom
+  useEffect(() => {
+    const handleTourEnter = () => setSelectedProcess("activos");
+    const handleTourExit = () => setSelectedProcess(null);
+    window.addEventListener("tour:enter-activos", handleTourEnter);
+    window.addEventListener("tour:exit-activos", handleTourExit);
+    return () => {
+      window.removeEventListener("tour:enter-activos", handleTourEnter);
+      window.removeEventListener("tour:exit-activos", handleTourExit);
+    };
+  }, []);
+
     <div className="w-full max-w-6xl mx-auto">
       <AnimatePresence mode="wait">
         {!selectedProcess ? (
