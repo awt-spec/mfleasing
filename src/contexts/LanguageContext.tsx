@@ -429,6 +429,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip2.desc": "Използвайте тази стрелка, за да се върнете към предишната секция",
     "onboarding.tip3.title": "Интерактивни карти",
     "onboarding.tip3.desc": "Кликнете върху карти с пулсиращ бутон за повече детайли",
+    "onboarding.tip3b.title": "Детайлен изглед",
+    "onboarding.tip3b.desc": "Ето как изглежда, когато влезете в карта — тук разглеждате конфигурациите на модула",
     "onboarding.tip4.title": "Клавишни комбинации",
     "onboarding.tip4.desc": "← → Спейс за навигация, F за цял екран",
     "onboarding.tip5.title": "Лента за напредък",
