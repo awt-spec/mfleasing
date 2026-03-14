@@ -308,6 +308,18 @@ const ActivosView = () => {
   const [subSelected, setSubSelected] = useState<string | null>(null);
   const activeSub = activosSubProcesses.find(p => p.id === subSelected);
 
+  // Listen for tour events to enter/exit contratos
+  useEffect(() => {
+    const handleEnterContratos = () => setSubSelected("contratos");
+    const handleExitContratos = () => setSubSelected(null);
+    window.addEventListener("tour:enter-contratos", handleEnterContratos);
+    window.addEventListener("tour:exit-contratos", handleExitContratos);
+    return () => {
+      window.removeEventListener("tour:enter-contratos", handleEnterContratos);
+      window.removeEventListener("tour:exit-contratos", handleExitContratos);
+    };
+  }, []);
+
   return (
     <AnimatePresence mode="wait">
       {!subSelected ? (
@@ -315,7 +327,12 @@ const ActivosView = () => {
           <StaggerContainer className="grid grid-cols-2 md:grid-cols-4 gap-3" staggerDelay={0.1} initialDelay={0.2}>
             {activosSubProcesses.map((process) => (
               <StaggerItem key={process.id}>
-                <motion.div className="bg-card rounded-2xl border border-border shadow-md p-4 flex flex-col h-full cursor-pointer" whileHover={{ y: -4, boxShadow: "0 16px 32px -12px rgba(0,0,0,0.15)" }} onClick={() => setSubSelected(process.id)}>
+                <motion.div
+                  className="bg-card rounded-2xl border border-border shadow-md p-4 flex flex-col h-full cursor-pointer"
+                  whileHover={{ y: -4, boxShadow: "0 16px 32px -12px rgba(0,0,0,0.15)" }}
+                  onClick={() => setSubSelected(process.id)}
+                  {...(process.id === "contratos" ? { "data-tour": "activos-sub-contratos" } : {})}
+                >
                   <motion.div className={`w-10 h-10 rounded-xl ${process.iconBg} flex items-center justify-center mb-3`} whileHover={{ scale: 1.1 }}>
                     <process.icon className={`w-5 h-5 ${process.iconColor}`} />
                   </motion.div>
@@ -346,7 +363,7 @@ const ActivosView = () => {
           </StaggerContainer>
         </motion.div>
       ) : (
-        <motion.div key="activos-detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.4 }}>
+        <motion.div key="activos-detail" data-tour="contratos-detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.4 }}>
           {activeSub && (
             <>
               <SubzoomHeader icon={activeSub.icon} iconBg={activeSub.iconBg} iconColor={activeSub.iconColor} title={activeSub.title} description={activeSub.description} tag={activeSub.tag} onBack={() => setSubSelected(null)} />
