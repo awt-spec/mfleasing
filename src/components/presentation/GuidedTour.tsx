@@ -105,6 +105,7 @@ const tourSteps: TourStep[] = [
     position: "top",
     slideIndex: 6,
     showCursor: true,
+    cursorTarget: '[data-tour="activos-first-btn"]',
   },
   {
     targetSelector: '[data-tour="activos-detail"]',
@@ -115,6 +116,7 @@ const tourSteps: TourStep[] = [
     dispatchOnEnter: "tour:enter-activos",
     dispatchOnLeave: "tour:exit-activos",
     showCursor: true,
+    cursorTarget: '[data-tour="activos-detail"]',
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
