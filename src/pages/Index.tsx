@@ -147,6 +147,15 @@ const Index = () => {
     setCurrentSlide(0);
   }, []);
 
+  const handleTourNavigate = useCallback((slideIndex: number) => {
+    setCurrentSlide((prevSlide) => {
+      setDirection(slideIndex > prevSlide ? 1 : -1);
+      return slideIndex;
+    });
+    setActiveGate(null);
+    setPendingSlide(null);
+  }, []);
+
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
