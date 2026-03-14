@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -20,14 +20,14 @@ const tourSteps: TourStep[] = [
     slideIndex: 0,
   },
   {
-    targetSelector: '[data-tour="progress-bar"]',
+    targetSelector: '[data-tour="progress-points"]',
     titleKey: "onboarding.tip5.title",
     descKey: "onboarding.tip5.desc",
     position: "top",
     slideIndex: 0,
   },
   {
-    targetSelector: '[data-tour="slide-content"]',
+    targetSelector: '[data-tour="activos-cards"]',
     titleKey: "onboarding.tip3.title",
     descKey: "onboarding.tip3.desc",
     position: "top",
@@ -94,15 +94,10 @@ const getTooltipStyle = (
   };
 };
 
-const getHighlightStyle = (rect: DOMRect): React.CSSProperties => ({
-  position: "fixed",
-  left: rect.left - 8,
-  top: rect.top - 8,
-  width: rect.width + 16,
-  height: rect.height + 16,
-  borderRadius: 16,
-  pointerEvents: "none",
-});
+const getTargetRect = (selector: string) => {
+  const element = document.querySelector(selector);
+  return element ? element.getBoundingClientRect() : null;
+};
 
 export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   const { t } = useLanguage();
@@ -110,63 +105,84 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   const [step, setStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [waitingForSlide, setWaitingForSlide] = useState(false);
+  const onNavigateRef = useRef(onNavigate);
 
-  // Always start the tour after a delay
   useEffect(() => {
-    const timer = setTimeout(() => setActive(true), 1500);
+    onNavigateRef.current = onNavigate;
+  }, [onNavigate]);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setActive(true), 1200);
     return () => clearTimeout(timer);
   }, []);
 
-  // Navigate to the correct slide when step changes
+  const goToSlide = useCallback((slideIndex: number) => {
+    onNavigateRef.current?.(slideIndex);
+  }, []);
+
   useEffect(() => {
     if (!active) return;
-    const currentStepData = tourSteps[step];
-    if (currentStepData.slideIndex !== undefined && onNavigate) {
-      setWaitingForSlide(true);
-      setTargetRect(null); // Clear rect while transitioning
-      onNavigate(currentStepData.slideIndex);
-      // Wait for slide transition to finish before finding the target
-      const timer = setTimeout(() => {
-        setWaitingForSlide(false);
-      }, 800);
-      return () => clearTimeout(timer);
-    }
-  }, [active, step, onNavigate]);
 
-  // Update target rect after slide transition completes
+    const currentStep = tourSteps[step];
+    if (currentStep.slideIndex === undefined) return;
+
+    setWaitingForSlide(true);
+    setTargetRect(null);
+    goToSlide(currentStep.slideIndex);
+
+    const timer = setTimeout(() => {
+      setWaitingForSlide(false);
+    }, 850);
+
+    return () => clearTimeout(timer);
+  }, [active, step, goToSlide]);
+
   useEffect(() => {
     if (!active || waitingForSlide) return;
 
-    const findTarget = () => {
-      const el = document.querySelector(tourSteps[step].targetSelector);
-      if (el) {
-        setTargetRect(el.getBoundingClientRect());
+    let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let attempts = 0;
+
+    const findRect = () => {
+      const rect = getTargetRect(tourSteps[step].targetSelector);
+      if (rect) {
+        setTargetRect(rect);
+        return;
+      }
+
+      if (attempts < 12) {
+        attempts += 1;
+        retryTimer = setTimeout(findRect, 120);
       }
     };
 
-    // Small extra delay to ensure DOM is painted
-    const timer = setTimeout(findTarget, 100);
+    const onViewportChange = () => {
+      const rect = getTargetRect(tourSteps[step].targetSelector);
+      if (rect) setTargetRect(rect);
+    };
 
-    window.addEventListener("resize", findTarget);
-    window.addEventListener("scroll", findTarget);
+    findRect();
+    window.addEventListener("resize", onViewportChange);
+    window.addEventListener("scroll", onViewportChange);
+
     return () => {
-      clearTimeout(timer);
-      window.removeEventListener("resize", findTarget);
-      window.removeEventListener("scroll", findTarget);
+      if (retryTimer) clearTimeout(retryTimer);
+      window.removeEventListener("resize", onViewportChange);
+      window.removeEventListener("scroll", onViewportChange);
     };
   }, [active, step, waitingForSlide]);
 
   const dismiss = useCallback(() => {
     setActive(false);
-    if (onNavigate) onNavigate(0);
-  }, [onNavigate]);
+    goToSlide(0);
+  }, [goToSlide]);
 
   const next = useCallback(() => {
     if (step < tourSteps.length - 1) {
       setStep((s) => s + 1);
-    } else {
-      dismiss();
+      return;
     }
+    dismiss();
   }, [step, dismiss]);
 
   const prev = useCallback(() => {
@@ -180,7 +196,6 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     <AnimatePresence>
       {active && targetRect && !waitingForSlide && (
         <>
-          {/* Backdrop with cutout */}
           <motion.div
             className="fixed inset-0 z-[200]"
             initial={{ opacity: 0 }}
@@ -194,29 +209,6 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
             onClick={dismiss}
           />
 
-          {/* Highlight ring */}
-          <motion.div
-            className="fixed z-[201] border-2 border-primary shadow-[0_0_0_4px_hsl(var(--primary)/0.2)]"
-            style={getHighlightStyle(targetRect)}
-            initial={{ opacity: 0, scale: 0.8 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.8 }}
-            transition={{ type: "spring", stiffness: 300, damping: 25 }}
-            layoutId="tour-highlight"
-          />
-
-          {/* Pulse ring */}
-          <motion.div
-            className="fixed z-[201] border-2 border-primary/40 rounded-2xl"
-            style={getHighlightStyle(targetRect)}
-            animate={{
-              scale: [1, 1.15, 1],
-              opacity: [0.6, 0, 0.6],
-            }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-
-          {/* Tooltip */}
           <motion.div
             className="fixed z-[202] bg-card border border-border rounded-2xl shadow-2xl p-5 max-w-xs w-72"
             style={getTooltipStyle(targetRect, currentStep.position)}
@@ -238,7 +230,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
                 <div
                   key={i}
                   className={`h-1 rounded-full flex-1 transition-colors ${
-                    i <= step ? "bg-primary" : "bg-muted"
+                    i <= step ? "bg-foreground/30" : "bg-muted"
                   }`}
                 />
               ))}

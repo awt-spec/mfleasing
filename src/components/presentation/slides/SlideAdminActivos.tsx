@@ -588,7 +588,7 @@ export const SlideAdminActivos = () => {
               <p className="text-lg text-muted-foreground">Selecciona un proceso para ver su diagrama</p>
             </SubZoomContainer>
 
-            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" staggerDelay={0.1} initialDelay={0.2}>
+            <StaggerContainer className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3" staggerDelay={0.1} initialDelay={0.2} data-tour="activos-cards">
               {topProcesses.map((process) => (
                 <StaggerItem key={process.id}>
                   <motion.div className="bg-card rounded-2xl border border-border shadow-md p-4 flex flex-col h-full cursor-pointer" whileHover={{ y: -4, boxShadow: "0 16px 32px -12px rgba(0,0,0,0.15)" }} onClick={() => setSelectedProcess(process.id)}>

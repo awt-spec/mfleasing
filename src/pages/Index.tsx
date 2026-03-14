@@ -315,7 +315,7 @@ const Index = () => {
           />
         </div>
 
-        <div className="flex justify-between items-start px-4 py-4">
+        <div className="flex justify-between items-start px-4 py-4" data-tour="progress-points">
           {slideConfig.map((slide, index) => {
             const isActive = index === currentSlide;
             const isPast = index < currentSlide;
