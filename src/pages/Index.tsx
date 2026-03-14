@@ -280,6 +280,7 @@ const Index = () => {
             }}
             className="min-h-screen"
             style={{ transformStyle: "preserve-3d" }}
+            data-tour="slide-content"
           >
             <Slide>
               <CurrentSlideComponent />
