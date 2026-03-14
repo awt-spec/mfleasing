@@ -268,12 +268,12 @@ const Index = () => {
       <GuidedTour onNavigate={handleTourNavigate} />
       
       <NavigationControls
-        onPrev={goPrev}
-        onNext={goNext}
-        onHome={goHome}
+        onPrev={tourActive ? () => {} : goPrev}
+        onNext={tourActive ? () => {} : goNext}
+        onHome={tourActive ? () => {} : goHome}
         onFullscreen={toggleFullscreen}
-        canGoPrev={currentSlide > 0}
-        canGoNext={currentSlide < totalSlides - 1}
+        canGoPrev={currentSlide > 0 && !tourActive}
+        canGoNext={currentSlide < totalSlides - 1 && !tourActive}
       />
 
       {/* Gate Form Modal */}
