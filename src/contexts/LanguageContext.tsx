@@ -337,6 +337,7 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip4.desc": "← → Spacja do nawigacji, F pełny ekran",
     "onboarding.dismiss": "Rozumiem!",
   },
+  bg: {
     "header.title": "Sysde",
     "header.subtitle": "Лизинг",
     "header.demo": "Заявка за Демо",
