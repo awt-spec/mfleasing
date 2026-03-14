@@ -63,9 +63,14 @@ const getTooltipStyle = (
     case "top":
       left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
       top = rect.top - gap;
+      // If not enough room above, place it higher in the viewport
+      const tooltipEstimatedHeight = 180;
+      if (top - tooltipEstimatedHeight < TOOLTIP_MARGIN) {
+        top = TOOLTIP_MARGIN + tooltipEstimatedHeight;
+      }
       return {
         left: Math.max(TOOLTIP_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN)),
-        top: Math.max(TOOLTIP_MARGIN, top),
+        top,
         transform: "translateY(-100%)",
       };
     case "bottom":
