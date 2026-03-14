@@ -328,8 +328,17 @@ const ActivosView = () => {
                       </div>
                     ))}
                   </div>
-                  <motion.div className={`w-full py-2 px-3 rounded-xl text-white text-xs font-semibold text-center ${process.buttonColor}`} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                  <motion.div
+                    className={`w-full py-2 px-3 rounded-xl text-white text-xs font-semibold text-center flex items-center justify-center gap-1 ${process.buttonColor}`}
+                    whileHover={{ scale: 1.03 }}
+                    whileTap={{ scale: 0.97 }}
+                    animate={{ scale: [1, 1.05, 1] }}
+                    transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.5 }}
+                  >
                     Ver {process.itemCount} config.
+                    <motion.span animate={{ x: [0, 3, 0] }} transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.5 }}>
+                      <ArrowRight className="w-3 h-3" />
+                    </motion.span>
                   </motion.div>
                 </motion.div>
               </StaggerItem>
@@ -595,8 +604,17 @@ export const SlideAdminActivos = () => {
                         </div>
                       ))}
                     </div>
-                    <motion.div className={`w-full py-2 px-3 rounded-xl text-white text-xs font-semibold text-center ${process.buttonColor}`} whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.97 }}>
+                    <motion.div
+                      className={`w-full py-2 px-3 rounded-xl text-white text-xs font-semibold text-center flex items-center justify-center gap-1 ${process.buttonColor}`}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      animate={{ scale: [1, 1.05, 1] }}
+                      transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.5 }}
+                    >
                       Ver {process.itemCount} config.
+                      <motion.span animate={{ x: [0, 3, 0] }} transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2.5 }}>
+                        <ArrowRight className="w-3 h-3" />
+                      </motion.span>
                     </motion.div>
                   </motion.div>
                 </StaggerItem>

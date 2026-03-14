@@ -19,6 +19,7 @@ import { SlideFormalizacion } from "@/components/presentation/slides/SlideFormal
 import { SlideAdminActivos } from "@/components/presentation/slides/SlideAdminActivos";
 import { SlideReportes } from "@/components/presentation/slides/SlideReportes";
 import { SlideClosing } from "@/components/presentation/slides/SlideClosing";
+import { OnboardingOverlay } from "@/components/presentation/OnboardingOverlay";
 
 // Slide configuration with components and label keys
 const slideConfig = [
@@ -243,6 +244,7 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
+      <OnboardingOverlay />
       
       <NavigationControls
         onPrev={goPrev}
