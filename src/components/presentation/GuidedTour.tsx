@@ -302,6 +302,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
             <AnimatedCursor rect={targetRect} />
           )}
 
+          <motion.div
             className="fixed z-[202] bg-card border border-border rounded-2xl shadow-2xl p-5 max-w-xs w-72"
             style={getTooltipStyle(targetRect, currentStep.position)}
             initial={{ opacity: 0, scale: 0.85, y: 10 }}
