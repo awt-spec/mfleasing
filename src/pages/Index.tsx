@@ -165,10 +165,20 @@ const Index = () => {
     }
   }, []);
 
+  // Listen for tour state changes
+  useEffect(() => {
+    const handleTourState = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setTourActive(detail?.active ?? false);
+    };
+    window.addEventListener("tour:state", handleTourState);
+    return () => window.removeEventListener("tour:state", handleTourState);
+  }, []);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (activeGate !== null) return; // Block keyboard nav while gate is open
+      if (activeGate !== null || tourActive) return; // Block during gate or tour
       switch (e.key) {
         case "ArrowRight":
         case "ArrowDown":
@@ -199,7 +209,7 @@ const Index = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNext, goPrev, goHome, tryNavigate, totalSlides, toggleFullscreen, activeGate]);
+  }, [goNext, goPrev, goHome, tryNavigate, totalSlides, toggleFullscreen, activeGate, tourActive]);
 
   // Touch/swipe navigation
   useEffect(() => {
