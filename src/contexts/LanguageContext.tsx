@@ -145,6 +145,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip2.desc": "Use this arrow to go back to the previous section",
     "onboarding.tip3.title": "Interactive cards",
     "onboarding.tip3.desc": "Click cards with a pulsing button to see more detail",
+    "onboarding.tip3b.title": "Detail view",
+    "onboarding.tip3b.desc": "This is what it looks like when you enter a card — explore the module's configurations here",
     "onboarding.tip4.title": "Keyboard shortcuts",
     "onboarding.tip4.desc": "← → Space to navigate, F for fullscreen",
     "onboarding.tip5.title": "Progress bar",
