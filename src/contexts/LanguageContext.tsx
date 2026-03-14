@@ -358,6 +358,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip2.desc": "Użyj tej strzałki, aby wrócić do poprzedniej sekcji",
     "onboarding.tip3.title": "Interaktywne karty",
     "onboarding.tip3.desc": "Kliknij karty z pulsującym przyciskiem, aby zobaczyć szczegóły",
+    "onboarding.tip3b.title": "Widok szczegółowy",
+    "onboarding.tip3b.desc": "Tak wygląda po wejściu w kartę — tutaj eksplorujesz konfiguracje modułu",
     "onboarding.tip4.title": "Skróty klawiszowe",
     "onboarding.tip4.desc": "← → Spacja do nawigacji, F pełny ekran",
     "onboarding.tip5.title": "Pasek postępu",
