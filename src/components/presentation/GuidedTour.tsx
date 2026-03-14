@@ -324,7 +324,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
           {/* Animated click cursor */}
           {currentStep.showCursor && targetRect && (
-            <AnimatedCursor rect={targetRect} />
+            <AnimatedCursor rect={targetRect} targetSelector={currentStep.cursorTarget || currentStep.targetSelector} />
           )}
 
           <motion.div
