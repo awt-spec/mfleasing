@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, X, Check, MousePointer2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TourStep {
