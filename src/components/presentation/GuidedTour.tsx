@@ -341,8 +341,19 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     if (currentStepData?.dispatchOnLeave) {
       window.dispatchEvent(new Event(currentStepData.dispatchOnLeave));
     }
+
+    // Ensure nested Activos views are always reset
+    window.dispatchEvent(new Event("tour:exit-contratos"));
+    window.dispatchEvent(new Event("tour:exit-activos"));
+
+    setWaitingForSlide(false);
+    setTargetRect(null);
+    setStep(0);
     setActive(false);
-    goToSlide(0);
+
+    requestAnimationFrame(() => {
+      goToSlide(0);
+    });
   }, [goToSlide, step]);
 
   const next = useCallback(() => {

@@ -169,7 +169,16 @@ const Index = () => {
   useEffect(() => {
     const handleTourState = (e: Event) => {
       const detail = (e as CustomEvent).detail;
-      setTourActive(detail?.active ?? false);
+      const isActive = detail?.active ?? false;
+      setTourActive(isActive);
+
+      // Hard reset when tour ends/cancels so user always returns to Inicio
+      if (!isActive) {
+        setDirection(-1);
+        setCurrentSlide(0);
+        setActiveGate(null);
+        setPendingSlide(null);
+      }
     };
     window.addEventListener("tour:state", handleTourState);
     return () => window.removeEventListener("tour:state", handleTourState);
