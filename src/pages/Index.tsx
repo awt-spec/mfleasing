@@ -221,6 +221,7 @@ const Index = () => {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (tourActive) return;
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 50) {
