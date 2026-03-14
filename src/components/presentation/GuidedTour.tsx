@@ -45,35 +45,68 @@ const tourSteps: TourStep[] = [
   },
 ];
 
+const TOOLTIP_WIDTH = 288; // w-72 = 18rem = 288px
+const TOOLTIP_MARGIN = 16;
+
 const getTooltipStyle = (
   rect: DOMRect,
   position: string
 ): React.CSSProperties => {
   const gap = 16;
+  const vw = window.innerWidth;
+  const vh = window.innerHeight;
+
+  let left: number;
+  let top: number;
+
   switch (position) {
     case "top":
+      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+      top = rect.top - gap;
       return {
-        left: rect.left + rect.width / 2,
-        top: rect.top - gap,
-        transform: "translate(-50%, -100%)",
+        left: Math.max(TOOLTIP_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN)),
+        top: Math.max(TOOLTIP_MARGIN, top),
+        transform: "translateY(-100%)",
       };
     case "bottom":
+      left = rect.left + rect.width / 2 - TOOLTIP_WIDTH / 2;
+      top = rect.bottom + gap;
       return {
-        left: rect.left + rect.width / 2,
-        top: rect.bottom + gap,
-        transform: "translate(-50%, 0)",
+        left: Math.max(TOOLTIP_MARGIN, Math.min(left, vw - TOOLTIP_WIDTH - TOOLTIP_MARGIN)),
+        top: Math.min(top, vh - 200),
+        transform: "translateY(0)",
       };
     case "left":
+      left = rect.left - gap - TOOLTIP_WIDTH;
+      top = rect.top + rect.height / 2;
+      // If it would go off-screen left, flip to right
+      if (left < TOOLTIP_MARGIN) {
+        return {
+          left: rect.right + gap,
+          top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
+          transform: "translateY(-50%)",
+        };
+      }
       return {
-        left: rect.left - gap,
-        top: rect.top + rect.height / 2,
-        transform: "translate(-100%, -50%)",
+        left,
+        top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
+        transform: "translateY(-50%)",
       };
     case "right":
+      left = rect.right + gap;
+      top = rect.top + rect.height / 2;
+      // If it would go off-screen right, flip to left
+      if (left + TOOLTIP_WIDTH > vw - TOOLTIP_MARGIN) {
+        return {
+          left: rect.left - gap - TOOLTIP_WIDTH,
+          top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
+          transform: "translateY(-50%)",
+        };
+      }
       return {
-        left: rect.right + gap,
-        top: rect.top + rect.height / 2,
-        transform: "translate(0, -50%)",
+        left,
+        top: Math.max(TOOLTIP_MARGIN, Math.min(top, vh - 200)),
+        transform: "translateY(-50%)",
       };
     default:
       return {};
