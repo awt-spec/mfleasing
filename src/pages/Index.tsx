@@ -51,6 +51,7 @@ const Index = () => {
   const [activeGate, setActiveGate] = useState<number | null>(null);
   const [pendingSlide, setPendingSlide] = useState<number | null>(null);
   const [hasActiveOperation, setHasActiveOperation] = useState<boolean | null>(null);
+  const [tourActive, setTourActive] = useState(false);
   const allAnswers = useRef<Record<string, string>>({});
   const totalSlides = slideConfig.length;
 
@@ -164,10 +165,20 @@ const Index = () => {
     }
   }, []);
 
+  // Listen for tour state changes
+  useEffect(() => {
+    const handleTourState = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      setTourActive(detail?.active ?? false);
+    };
+    window.addEventListener("tour:state", handleTourState);
+    return () => window.removeEventListener("tour:state", handleTourState);
+  }, []);
+
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (activeGate !== null) return; // Block keyboard nav while gate is open
+      if (activeGate !== null || tourActive) return; // Block during gate or tour
       switch (e.key) {
         case "ArrowRight":
         case "ArrowDown":
@@ -198,7 +209,7 @@ const Index = () => {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [goNext, goPrev, goHome, tryNavigate, totalSlides, toggleFullscreen, activeGate]);
+  }, [goNext, goPrev, goHome, tryNavigate, totalSlides, toggleFullscreen, activeGate, tourActive]);
 
   // Touch/swipe navigation
   useEffect(() => {
@@ -210,6 +221,7 @@ const Index = () => {
     };
 
     const handleTouchEnd = (e: TouchEvent) => {
+      if (tourActive) return;
       touchEndX = e.changedTouches[0].screenX;
       const diff = touchStartX - touchEndX;
       if (Math.abs(diff) > 50) {
@@ -256,12 +268,12 @@ const Index = () => {
       <GuidedTour onNavigate={handleTourNavigate} />
       
       <NavigationControls
-        onPrev={goPrev}
-        onNext={goNext}
-        onHome={goHome}
+        onPrev={tourActive ? () => {} : goPrev}
+        onNext={tourActive ? () => {} : goNext}
+        onHome={tourActive ? () => {} : goHome}
         onFullscreen={toggleFullscreen}
-        canGoPrev={currentSlide > 0}
-        canGoNext={currentSlide < totalSlides - 1}
+        canGoPrev={currentSlide > 0 && !tourActive}
+        canGoNext={currentSlide < totalSlides - 1 && !tourActive}
       />
 
       {/* Gate Form Modal */}
@@ -323,7 +335,7 @@ const Index = () => {
             return (
               <button
                 key={slide.id}
-                onClick={() => tryNavigate(index)}
+                onClick={() => !tourActive && tryNavigate(index)}
                 className="flex flex-col items-center gap-2 group"
               >
                 <motion.div

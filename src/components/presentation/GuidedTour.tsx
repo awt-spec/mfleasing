@@ -11,10 +11,10 @@ interface TourStep {
   slideIndex?: number;
   dispatchOnEnter?: string;
   dispatchOnLeave?: string;
-  /** Show animated click cursor on target */
   showCursor?: boolean;
-  /** Selector for where the cursor should point (defaults to targetSelector) */
   cursorTarget?: string;
+  /** Extra padding around the spotlight */
+  spotlightPadding?: number;
 }
 
 const AnimatedCursor = ({ targetSelector }: { targetSelector?: string; rect: DOMRect }) => {
@@ -106,6 +106,7 @@ const tourSteps: TourStep[] = [
     slideIndex: 6,
     showCursor: true,
     cursorTarget: '[data-tour="activos-first-btn"]',
+    spotlightPadding: 20,
   },
   {
     targetSelector: '[data-tour="activos-detail"]',
@@ -201,6 +202,11 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     const timer = setTimeout(() => setActive(true), 1200);
     return () => clearTimeout(timer);
   }, []);
+
+  // Broadcast tour active state
+  useEffect(() => {
+    window.dispatchEvent(new CustomEvent("tour:state", { detail: { active } }));
+  }, [active]);
 
   const goToSlide = useCallback((slideIndex: number) => {
     onNavigateRef.current?.(slideIndex);
@@ -304,23 +310,32 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
   const currentStep = tourSteps[step];
   const isLast = step === tourSteps.length - 1;
+  const padding = currentStep.spotlightPadding ?? 40;
 
   return (
     <AnimatePresence>
       {active && targetRect && !waitingForSlide && (
         <>
+          {/* Overlay using box-shadow instead of mask for cleaner shadow */}
           <motion.div
-            className="fixed inset-0 z-[200]"
+            className="fixed inset-0 z-[200] pointer-events-auto"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            style={{
-              background: "rgba(0,0,0,0.55)",
-              maskImage: `radial-gradient(ellipse ${targetRect.width / 2 + 40}px ${targetRect.height / 2 + 40}px at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent 70%, black 71%)`,
-              WebkitMaskImage: `radial-gradient(ellipse ${targetRect.width / 2 + 40}px ${targetRect.height / 2 + 40}px at ${targetRect.left + targetRect.width / 2}px ${targetRect.top + targetRect.height / 2}px, transparent 70%, black 71%)`,
-            }}
             onClick={dismiss}
-          />
+          >
+            <div
+              className="absolute"
+              style={{
+                left: targetRect.left - padding,
+                top: targetRect.top - padding,
+                width: targetRect.width + padding * 2,
+                height: targetRect.height + padding * 2,
+                borderRadius: "16px",
+                boxShadow: "0 0 0 9999px rgba(0,0,0,0.6)",
+              }}
+            />
+          </motion.div>
 
           {/* Animated click cursor */}
           {currentStep.showCursor && targetRect && (
