@@ -636,7 +636,7 @@ export const SlideAdminActivos = () => {
             <CategoryLegend items={legendItems} />
           </motion.div>
         ) : (
-          <motion.div key="detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
+          <motion.div key="detail" data-tour="activos-detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
             {activeProcess && (
               <>
                 <SubzoomHeader icon={activeProcess.icon} iconBg={activeProcess.iconBg} iconColor={activeProcess.iconColor} title={activeProcess.title} description={activeProcess.description} tag={activeProcess.tag} onBack={() => setSelectedProcess(null)} />

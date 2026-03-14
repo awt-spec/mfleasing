@@ -9,6 +9,10 @@ interface TourStep {
   descKey: string;
   position: "top" | "bottom" | "left" | "right";
   slideIndex?: number;
+  /** Custom event to dispatch when entering this step */
+  dispatchOnEnter?: string;
+  /** Custom event to dispatch when leaving this step */
+  dispatchOnLeave?: string;
 }
 
 const tourSteps: TourStep[] = [
@@ -34,11 +38,20 @@ const tourSteps: TourStep[] = [
     slideIndex: 6,
   },
   {
+    targetSelector: '[data-tour="activos-detail"]',
+    titleKey: "onboarding.tip3b.title",
+    descKey: "onboarding.tip3b.desc",
+    position: "bottom",
+    slideIndex: 6,
+    dispatchOnEnter: "tour:enter-activos",
+    dispatchOnLeave: "tour:exit-activos",
+  },
+  {
     targetSelector: '[data-tour="nav-prev"]',
     titleKey: "onboarding.tip2.title",
     descKey: "onboarding.tip2.desc",
     position: "right",
-    slideIndex: 6,
+    slideIndex: 0,
   },
   {
     targetSelector: '[data-tour="slide-content"]',
@@ -106,6 +119,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
   const [waitingForSlide, setWaitingForSlide] = useState(false);
   const onNavigateRef = useRef(onNavigate);
+  const prevStepRef = useRef(0);
 
   useEffect(() => {
     onNavigateRef.current = onNavigate;
@@ -120,23 +134,46 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     onNavigateRef.current?.(slideIndex);
   }, []);
 
+  // Handle step transitions: navigate, dispatch events
   useEffect(() => {
     if (!active) return;
 
-    const currentStep = tourSteps[step];
-    if (currentStep.slideIndex === undefined) return;
+    const currentStepData = tourSteps[step];
+    const prevStepData = tourSteps[prevStepRef.current];
+
+    // Dispatch leave event from previous step
+    if (prevStepRef.current !== step && prevStepData?.dispatchOnLeave) {
+      window.dispatchEvent(new Event(prevStepData.dispatchOnLeave));
+    }
+
+    prevStepRef.current = step;
 
     setWaitingForSlide(true);
     setTargetRect(null);
-    goToSlide(currentStep.slideIndex);
+
+    // Navigate to the correct slide
+    if (currentStepData.slideIndex !== undefined) {
+      goToSlide(currentStepData.slideIndex);
+    }
+
+    // Dispatch enter event for this step (after a small delay for slide transition)
+    const enterTimer = setTimeout(() => {
+      if (currentStepData.dispatchOnEnter) {
+        window.dispatchEvent(new Event(currentStepData.dispatchOnEnter));
+      }
+    }, 400);
 
     const timer = setTimeout(() => {
       setWaitingForSlide(false);
-    }, 850);
+    }, currentStepData.dispatchOnEnter ? 1200 : 850);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+      clearTimeout(enterTimer);
+    };
   }, [active, step, goToSlide]);
 
+  // Find target rect with retries
   useEffect(() => {
     if (!active || waitingForSlide) return;
 
@@ -145,14 +182,13 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
     const findRect = () => {
       const rect = getTargetRect(tourSteps[step].targetSelector);
-      if (rect) {
+      if (rect && rect.width > 0) {
         setTargetRect(rect);
         return;
       }
-
-      if (attempts < 12) {
+      if (attempts < 15) {
         attempts += 1;
-        retryTimer = setTimeout(findRect, 120);
+        retryTimer = setTimeout(findRect, 150);
       }
     };
 
@@ -173,9 +209,14 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   }, [active, step, waitingForSlide]);
 
   const dismiss = useCallback(() => {
+    // Dispatch leave event from current step
+    const currentStepData = tourSteps[step];
+    if (currentStepData?.dispatchOnLeave) {
+      window.dispatchEvent(new Event(currentStepData.dispatchOnLeave));
+    }
     setActive(false);
     goToSlide(0);
-  }, [goToSlide]);
+  }, [goToSlide, step]);
 
   const next = useCallback(() => {
     if (step < tourSteps.length - 1) {
