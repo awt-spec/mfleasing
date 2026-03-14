@@ -76,6 +76,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip3.desc": "Haz click en tarjetas con botón pulsante para ver más detalle",
     "onboarding.tip3b.title": "Vista de detalle",
     "onboarding.tip3b.desc": "Así se ve al entrar en una tarjeta — aquí exploras las configuraciones del módulo",
+    "onboarding.tip3c.title": "Contratos",
+    "onboarding.tip3c.desc": "Vista detallada del ciclo contractual: apertura, configuración y financiamiento",
     "onboarding.tip4.title": "Atajos de teclado",
     "onboarding.tip4.desc": "← → Espacio para navegar, F pantalla completa",
     "onboarding.tip5.title": "Barra de progreso",
