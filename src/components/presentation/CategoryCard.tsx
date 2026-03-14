@@ -70,11 +70,10 @@ export const CategoryCard = ({
       </div>
 
       {/* Action button */}
-      <motion.button
+      <motion.div
         className={`w-full py-3 px-4 rounded-xl text-white font-semibold flex items-center justify-center gap-2 ${buttonColor}`}
-        onClick={onClick}
         whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
+        whileTap={{ scale: 0.98 }
         initial={{ opacity: 0 }}
         animate={{
           opacity: 1,
