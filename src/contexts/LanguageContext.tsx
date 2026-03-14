@@ -222,6 +222,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip3.desc": "Cliquez sur les cartes avec un bouton pulsant pour plus de détails",
     "onboarding.tip3b.title": "Vue détaillée",
     "onboarding.tip3b.desc": "Voici ce que cela donne en entrant dans une carte — explorez les configurations du module ici",
+    "onboarding.tip3c.title": "Contrats",
+    "onboarding.tip3c.desc": "Vue détaillée du cycle contractuel : ouverture, configuration et financement",
     "onboarding.tip4.title": "Raccourcis clavier",
     "onboarding.tip4.desc": "← → Espace pour naviguer, F plein écran",
     "onboarding.tip5.title": "Barre de progression",
