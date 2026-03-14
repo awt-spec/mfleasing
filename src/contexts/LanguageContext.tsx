@@ -143,6 +143,10 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip4.desc": "← → Space to navigate, F for fullscreen",
     "onboarding.dismiss": "Got it!",
   },
+  fr: {
+    "header.title": "Sysde",
+    "header.subtitle": "Crédit-bail",
+    "header.demo": "Planifier une Démo",
     "slide.inicio": "Accueil",
     "slide.flujo": "Flux",
     "slide.reglas": "Règles",
