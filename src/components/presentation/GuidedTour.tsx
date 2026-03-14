@@ -1,16 +1,14 @@
-import { useState, useEffect, useCallback, useRef } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
-
-const STORAGE_KEY = "sysde-tour-seen";
 
 interface TourStep {
   targetSelector: string;
   titleKey: string;
   descKey: string;
   position: "top" | "bottom" | "left" | "right";
-  slideIndex?: number; // Navigate to this slide before highlighting
+  slideIndex?: number;
 }
 
 const tourSteps: TourStep[] = [
@@ -33,7 +31,7 @@ const tourSteps: TourStep[] = [
     titleKey: "onboarding.tip3.title",
     descKey: "onboarding.tip3.desc",
     position: "top",
-    slideIndex: 6, // Navigate to Activos slide
+    slideIndex: 6,
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
@@ -47,7 +45,7 @@ const tourSteps: TourStep[] = [
     titleKey: "onboarding.tip4.title",
     descKey: "onboarding.tip4.desc",
     position: "bottom",
-    slideIndex: 0, // Return to intro
+    slideIndex: 0,
   },
 ];
 
@@ -88,8 +86,6 @@ const getTooltipStyle = (
       left = rect.right + gap;
       top = rect.top + rect.height / 2 - TOOLTIP_HEIGHT / 2;
       break;
-    default:
-      break;
   }
 
   return {
@@ -113,13 +109,12 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
-  const initialSlide = useRef(0);
+  const [waitingForSlide, setWaitingForSlide] = useState(false);
 
+  // Always start the tour after a delay
   useEffect(() => {
-    if (!localStorage.getItem(STORAGE_KEY)) {
-      const timer = setTimeout(() => setActive(true), 1500);
-      return () => clearTimeout(timer);
-    }
+    const timer = setTimeout(() => setActive(true), 1500);
+    return () => clearTimeout(timer);
   }, []);
 
   // Navigate to the correct slide when step changes
@@ -127,37 +122,43 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     if (!active) return;
     const currentStepData = tourSteps[step];
     if (currentStepData.slideIndex !== undefined && onNavigate) {
+      setWaitingForSlide(true);
+      setTargetRect(null); // Clear rect while transitioning
       onNavigate(currentStepData.slideIndex);
+      // Wait for slide transition to finish before finding the target
+      const timer = setTimeout(() => {
+        setWaitingForSlide(false);
+      }, 800);
+      return () => clearTimeout(timer);
     }
   }, [active, step, onNavigate]);
 
-  const updateRect = useCallback(() => {
-    if (!active) return;
-    const el = document.querySelector(tourSteps[step].targetSelector);
-    if (el) {
-      setTargetRect(el.getBoundingClientRect());
-    }
-  }, [active, step]);
-
+  // Update target rect after slide transition completes
   useEffect(() => {
-    // Delay rect update to allow slide transition to complete
-    const timer = setTimeout(updateRect, 700);
-    window.addEventListener("resize", updateRect);
-    window.addEventListener("scroll", updateRect);
+    if (!active || waitingForSlide) return;
+
+    const findTarget = () => {
+      const el = document.querySelector(tourSteps[step].targetSelector);
+      if (el) {
+        setTargetRect(el.getBoundingClientRect());
+      }
+    };
+
+    // Small extra delay to ensure DOM is painted
+    const timer = setTimeout(findTarget, 100);
+
+    window.addEventListener("resize", findTarget);
+    window.addEventListener("scroll", findTarget);
     return () => {
       clearTimeout(timer);
-      window.removeEventListener("resize", updateRect);
-      window.removeEventListener("scroll", updateRect);
+      window.removeEventListener("resize", findTarget);
+      window.removeEventListener("scroll", findTarget);
     };
-  }, [updateRect]);
+  }, [active, step, waitingForSlide]);
 
   const dismiss = useCallback(() => {
     setActive(false);
-    localStorage.setItem(STORAGE_KEY, "1");
-    // Return to initial slide
-    if (onNavigate) {
-      onNavigate(0);
-    }
+    if (onNavigate) onNavigate(0);
   }, [onNavigate]);
 
   const next = useCallback(() => {
@@ -177,7 +178,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
   return (
     <AnimatePresence>
-      {active && targetRect && (
+      {active && targetRect && !waitingForSlide && (
         <>
           {/* Backdrop with cutout */}
           <motion.div
@@ -225,7 +226,6 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
             transition={{ type: "spring", stiffness: 300, damping: 25 }}
             key={step}
           >
-            {/* Close */}
             <button
               onClick={dismiss}
               className="absolute top-3 right-3 p-1 rounded-full hover:bg-muted transition-colors"
@@ -233,7 +233,6 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
               <X className="w-4 h-4 text-muted-foreground" />
             </button>
 
-            {/* Step counter */}
             <div className="flex gap-1.5 mb-3">
               {tourSteps.map((_, i) => (
                 <div
@@ -252,7 +251,6 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
               {t(currentStep.descKey)}
             </p>
 
-            {/* Controls */}
             <div className="flex items-center justify-between">
               <button
                 onClick={dismiss}
