@@ -137,14 +137,28 @@ const tourSteps: TourStep[] = [
     slideIndex: 0,
   },
   {
-    targetSelector: '[data-tour="activos-cards"]',
+    targetSelector: '[data-tour="nav-prev"]',
+    titleKey: "onboarding.tip2.title",
+    descKey: "onboarding.tip2.desc",
+    position: "right",
+    slideIndex: 0,
+  },
+  {
+    targetSelector: '[data-tour="slide-content"]',
+    titleKey: "onboarding.tip4.title",
+    descKey: "onboarding.tip4.desc",
+    position: "bottom",
+    slideIndex: 0,
+  },
+  {
+    targetSelector: '[data-tour="activos-first-btn"]',
     titleKey: "onboarding.tip3.title",
     descKey: "onboarding.tip3.desc",
-    position: "top",
+    position: "right",
     slideIndex: 6,
     showCursor: true,
     cursorTarget: '[data-tour="activos-first-btn"]',
-    spotlightPadding: 20,
+    spotlightPadding: 12,
   },
   {
     targetSelector: '[data-tour="activos-detail"]',
@@ -167,20 +181,6 @@ const tourSteps: TourStep[] = [
     dispatchOnLeave: "tour:exit-contratos",
     showCursor: false,
     spotlightPadding: 16,
-  },
-  {
-    targetSelector: '[data-tour="nav-prev"]',
-    titleKey: "onboarding.tip2.title",
-    descKey: "onboarding.tip2.desc",
-    position: "right",
-    slideIndex: 0,
-  },
-  {
-    targetSelector: '[data-tour="slide-content"]',
-    titleKey: "onboarding.tip4.title",
-    descKey: "onboarding.tip4.desc",
-    position: "bottom",
-    slideIndex: 0,
   },
 ];
 
