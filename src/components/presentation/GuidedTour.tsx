@@ -81,6 +81,7 @@ const tourSteps: TourStep[] = [
     descKey: "onboarding.tip3.desc",
     position: "top",
     slideIndex: 6,
+    showCursor: true,
   },
   {
     targetSelector: '[data-tour="activos-detail"]',
@@ -90,6 +91,7 @@ const tourSteps: TourStep[] = [
     slideIndex: 6,
     dispatchOnEnter: "tour:enter-activos",
     dispatchOnLeave: "tour:exit-activos",
+    showCursor: true,
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
