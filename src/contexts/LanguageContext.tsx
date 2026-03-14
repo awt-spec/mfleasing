@@ -388,8 +388,18 @@ const translations: Record<Language, Record<string, string>> = {
     "lang.ko": "한국어",
     "lang.pl": "Polski",
     "lang.bg": "Български",
+    "onboarding.title": "Как да навигирате?",
+    "onboarding.subtitle": "Научете контролите за разглеждане на презентацията",
+    "onboarding.tip1.title": "Странични стрелки",
+    "onboarding.tip1.desc": "Използвайте ← → за преминаване между секции",
+    "onboarding.tip2.title": "Плъзнете на мобилен",
+    "onboarding.tip2.desc": "Плъзнете наляво или надясно за напредване",
+    "onboarding.tip3.title": "Кликнете върху картите",
+    "onboarding.tip3.desc": "Картите с пулсиращ бутон имат повече детайли",
+    "onboarding.tip4.title": "Клавишни комбинации",
+    "onboarding.tip4.desc": "← → Спейс за навигация, F за цял екран",
+    "onboarding.dismiss": "Разбрах!",
   },
-};
 
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
