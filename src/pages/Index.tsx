@@ -343,7 +343,7 @@ const Index = () => {
                 <span className={`text-[10px] font-medium transition-all ${
                   isActive 
                     ? "text-primary" 
-                    : "text-muted-foreground opacity-0 group-hover:opacity-100"
+                    : "text-muted-foreground"
                 }`}>
                   {t(slide.labelKey)}
                 </span>
