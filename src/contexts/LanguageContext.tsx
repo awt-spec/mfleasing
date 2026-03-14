@@ -272,6 +272,7 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip4.desc": "← → 스페이스로 탐색, F 전체 화면",
     "onboarding.dismiss": "알겠습니다!",
   },
+  pl: {
     "header.title": "Sysde",
     "header.subtitle": "Leasing",
     "header.demo": "Umów Demo",
