@@ -28,11 +28,12 @@ export const CategoryCard = ({
 }: CategoryCardProps) => {
   return (
     <motion.div
-      className="bg-card rounded-2xl border border-border shadow-lg p-6 flex flex-col h-full"
+      className="bg-card rounded-2xl border border-border shadow-lg p-6 flex flex-col h-full cursor-pointer"
       initial={{ opacity: 0, y: 30, scale: 0.95 }}
       animate={{ opacity: 1, y: 0, scale: 1 }}
       transition={{ delay, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
       whileHover={{ y: -4, boxShadow: "0 20px 40px -15px rgba(0,0,0,0.15)" }}
+      onClick={onClick}
     >
       {/* Header */}
       <div className="flex items-start gap-4 mb-5">
