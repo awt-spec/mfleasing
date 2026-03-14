@@ -29,7 +29,7 @@ const AnimatedCursor = ({ targetSelector }: { targetSelector?: string; rect: DOM
         setCursorRect(el.getBoundingClientRect());
         return;
       }
-      if (attempts < 10) {
+      if (attempts < 15) {
         attempts++;
         setTimeout(find, 200);
       }
@@ -44,41 +44,79 @@ const AnimatedCursor = ({ targetSelector }: { targetSelector?: string; rect: DOM
     <motion.div
       className="fixed z-[203] pointer-events-none"
       style={{
-        left: finalRect.left + finalRect.width * 0.5,
-        top: finalRect.top + finalRect.height * 0.5,
+        left: finalRect.left + finalRect.width * 0.45,
+        top: finalRect.top + finalRect.height * 0.45,
       }}
-      initial={{ opacity: 0, scale: 0.5 }}
-      animate={{ opacity: 1, scale: 1 }}
+      initial={{ opacity: 0, scale: 0.3, y: -20 }}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
       exit={{ opacity: 0 }}
-      transition={{ delay: 0.3 }}
+      transition={{ delay: 0.4, duration: 0.4, ease: "easeOut" }}
     >
+      {/* Mouse pointer icon */}
       <motion.div
         animate={{
-          y: [0, 4, 0],
-          scale: [1, 0.9, 1],
+          y: [0, 6, 2, 6, 0],
         }}
         transition={{
-          duration: 1.4,
+          duration: 2,
           repeat: Infinity,
-          repeatDelay: 0.8,
+          repeatDelay: 0.5,
           ease: "easeInOut",
         }}
       >
-        <MousePointer2 className="w-7 h-7 text-primary drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 6px rgba(196,33,38,0.4))" }} />
+        <MousePointer2
+          className="w-8 h-8 text-primary"
+          style={{
+            filter: "drop-shadow(0 3px 8px rgba(196,33,38,0.5))",
+            transform: "rotate(-5deg)",
+          }}
+        />
       </motion.div>
+
+      {/* Click ripple effect */}
       <motion.div
-        className="absolute top-0 left-0 w-6 h-6 rounded-full border-2 border-primary/60"
+        className="absolute top-1 left-1 w-5 h-5 rounded-full bg-primary/30"
         animate={{
-          scale: [0.5, 2.5],
-          opacity: [0.7, 0],
+          scale: [0.3, 2.5, 3],
+          opacity: [0.8, 0.3, 0],
+        }}
+        transition={{
+          duration: 1.2,
+          repeat: Infinity,
+          repeatDelay: 1.3,
+          delay: 0.8,
+          ease: "easeOut",
+        }}
+      />
+      {/* Second ripple (delayed) */}
+      <motion.div
+        className="absolute top-1 left-1 w-5 h-5 rounded-full border-2 border-primary/50"
+        animate={{
+          scale: [0.5, 3],
+          opacity: [0.6, 0],
         }}
         transition={{
           duration: 1,
           repeat: Infinity,
-          repeatDelay: 1.2,
-          delay: 0.6,
+          repeatDelay: 1.5,
+          delay: 1.1,
+          ease: "easeOut",
         }}
       />
+
+      {/* "Click" text label */}
+      <motion.div
+        className="absolute -bottom-6 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 bg-primary text-primary-foreground text-[10px] font-bold rounded-full"
+        animate={{ opacity: [0, 1, 1, 0], y: [4, 0, 0, 4] }}
+        transition={{
+          duration: 2,
+          repeat: Infinity,
+          repeatDelay: 0.5,
+          delay: 0.6,
+        }}
+      >
+        click
+      </motion.div>
     </motion.div>
   );
 };
@@ -117,7 +155,18 @@ const tourSteps: TourStep[] = [
     dispatchOnEnter: "tour:enter-activos",
     dispatchOnLeave: "tour:exit-activos",
     showCursor: true,
-    cursorTarget: '[data-tour="activos-detail"]',
+    cursorTarget: '[data-tour="activos-sub-contratos"]',
+  },
+  {
+    targetSelector: '[data-tour="contratos-detail"]',
+    titleKey: "onboarding.tip3c.title",
+    descKey: "onboarding.tip3c.desc",
+    position: "top",
+    slideIndex: 6,
+    dispatchOnEnter: "tour:enter-contratos",
+    dispatchOnLeave: "tour:exit-contratos",
+    showCursor: false,
+    spotlightPadding: 16,
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
