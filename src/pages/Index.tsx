@@ -295,6 +295,7 @@ const Index = () => {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.5 }}
+        data-tour="progress-bar"
       >
         <div className="relative h-1 bg-muted mx-16">
           <motion.div

@@ -45,6 +45,7 @@ export const NavigationControls = ({
         initial={{ x: 100, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
         transition={{ delay: 0.3 }}
+        data-tour="nav-next"
       >
         <ChevronRight className="w-6 h-6" />
       </motion.button>
