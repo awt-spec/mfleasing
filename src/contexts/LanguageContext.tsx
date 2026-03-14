@@ -287,6 +287,8 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip2.desc": "이 화살표로 이전 섹션으로 돌아가기",
     "onboarding.tip3.title": "인터랙티브 카드",
     "onboarding.tip3.desc": "깜빡이는 버튼이 있는 카드를 클릭하면 상세 정보를 볼 수 있습니다",
+    "onboarding.tip3b.title": "상세 보기",
+    "onboarding.tip3b.desc": "카드에 들어가면 이렇게 보입니다 — 여기서 모듈 설정을 탐색하세요",
     "onboarding.tip4.title": "키보드 단축키",
     "onboarding.tip4.desc": "← → 스페이스로 탐색, F 전체 화면",
     "onboarding.tip5.title": "진행 바",
