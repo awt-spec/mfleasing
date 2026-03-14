@@ -244,6 +244,7 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
+      <OnboardingOverlay />
       
       <NavigationControls
         onPrev={goPrev}

@@ -75,11 +75,22 @@ export const CategoryCard = ({
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
         initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: delay + 0.4 }}
+        animate={{
+          opacity: 1,
+          scale: [1, 1.04, 1],
+        }}
+        transition={{
+          opacity: { delay: delay + 0.4 },
+          scale: { delay: delay + 1.5, duration: 1.8, repeat: Infinity, repeatDelay: 2 },
+        }}
       >
         Ver {itemCount} configuraciones
-        <ArrowRight className="w-4 h-4" />
+        <motion.span
+          animate={{ x: [0, 4, 0] }}
+          transition={{ duration: 1.8, repeat: Infinity, repeatDelay: 2, delay: delay + 1.5 }}
+        >
+          <ArrowRight className="w-4 h-4" />
+        </motion.span>
       </motion.button>
     </motion.div>
   );
