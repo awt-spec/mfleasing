@@ -244,7 +244,10 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
-      <GuidedTour />
+      <GuidedTour onNavigate={(slideIndex) => {
+        setDirection(slideIndex > currentSlide ? 1 : -1);
+        setCurrentSlide(slideIndex);
+      }} />
       
       <NavigationControls
         onPrev={goPrev}

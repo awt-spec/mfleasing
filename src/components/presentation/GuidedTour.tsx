@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
@@ -10,6 +10,7 @@ interface TourStep {
   titleKey: string;
   descKey: string;
   position: "top" | "bottom" | "left" | "right";
+  slideIndex?: number; // Navigate to this slide before highlighting
 }
 
 const tourSteps: TourStep[] = [
@@ -18,34 +19,43 @@ const tourSteps: TourStep[] = [
     titleKey: "onboarding.tip1.title",
     descKey: "onboarding.tip1.desc",
     position: "left",
+    slideIndex: 0,
   },
   {
     targetSelector: '[data-tour="progress-bar"]',
     titleKey: "onboarding.tip5.title",
     descKey: "onboarding.tip5.desc",
     position: "top",
+    slideIndex: 0,
   },
   {
     targetSelector: '[data-tour="slide-content"]',
     titleKey: "onboarding.tip3.title",
     descKey: "onboarding.tip3.desc",
-    position: "bottom",
+    position: "top",
+    slideIndex: 6, // Navigate to Activos slide
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
     titleKey: "onboarding.tip2.title",
     descKey: "onboarding.tip2.desc",
     position: "right",
+    slideIndex: 6,
   },
   {
     targetSelector: '[data-tour="slide-content"]',
     titleKey: "onboarding.tip4.title",
     descKey: "onboarding.tip4.desc",
     position: "bottom",
+    slideIndex: 0, // Return to intro
   },
 ];
 
-const TOOLTIP_WIDTH = 288; // w-72 = 18rem = 288px
+interface GuidedTourProps {
+  onNavigate?: (slideIndex: number) => void;
+}
+
+const TOOLTIP_WIDTH = 288;
 const TOOLTIP_HEIGHT = 220;
 const TOOLTIP_MARGIN = 16;
 
@@ -98,11 +108,12 @@ const getHighlightStyle = (rect: DOMRect): React.CSSProperties => ({
   pointerEvents: "none",
 });
 
-export const GuidedTour = () => {
+export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   const { t } = useLanguage();
   const [active, setActive] = useState(false);
   const [step, setStep] = useState(0);
   const [targetRect, setTargetRect] = useState<DOMRect | null>(null);
+  const initialSlide = useRef(0);
 
   useEffect(() => {
     if (!localStorage.getItem(STORAGE_KEY)) {
@@ -110,6 +121,15 @@ export const GuidedTour = () => {
       return () => clearTimeout(timer);
     }
   }, []);
+
+  // Navigate to the correct slide when step changes
+  useEffect(() => {
+    if (!active) return;
+    const currentStepData = tourSteps[step];
+    if (currentStepData.slideIndex !== undefined && onNavigate) {
+      onNavigate(currentStepData.slideIndex);
+    }
+  }, [active, step, onNavigate]);
 
   const updateRect = useCallback(() => {
     if (!active) return;
@@ -120,10 +140,12 @@ export const GuidedTour = () => {
   }, [active, step]);
 
   useEffect(() => {
-    updateRect();
+    // Delay rect update to allow slide transition to complete
+    const timer = setTimeout(updateRect, 700);
     window.addEventListener("resize", updateRect);
     window.addEventListener("scroll", updateRect);
     return () => {
+      clearTimeout(timer);
       window.removeEventListener("resize", updateRect);
       window.removeEventListener("scroll", updateRect);
     };
@@ -132,7 +154,11 @@ export const GuidedTour = () => {
   const dismiss = useCallback(() => {
     setActive(false);
     localStorage.setItem(STORAGE_KEY, "1");
-  }, []);
+    // Return to initial slide
+    if (onNavigate) {
+      onNavigate(0);
+    }
+  }, [onNavigate]);
 
   const next = useCallback(() => {
     if (step < tourSteps.length - 1) {
