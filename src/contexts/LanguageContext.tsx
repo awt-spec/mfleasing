@@ -208,6 +208,7 @@ const translations: Record<Language, Record<string, string>> = {
     "onboarding.tip4.desc": "← → Espace pour naviguer, F plein écran",
     "onboarding.dismiss": "Compris !",
   },
+  ko: {
     "header.title": "Sysde",
     "header.subtitle": "리스",
     "header.demo": "데모 예약",
