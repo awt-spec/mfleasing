@@ -587,6 +587,7 @@ export const SlideAdminActivos = () => {
     };
   }, []);
 
+  return (
     <div className="w-full max-w-6xl mx-auto">
       <AnimatePresence mode="wait">
         {!selectedProcess ? (
