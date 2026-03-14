@@ -17,48 +17,71 @@ interface TourStep {
   cursorTarget?: string;
 }
 
-const AnimatedCursor = ({ rect }: { rect: DOMRect }) => (
-  <motion.div
-    className="fixed z-[203] pointer-events-none"
-    style={{
-      left: rect.left + rect.width * 0.45,
-      top: rect.top + rect.height * 0.45,
-    }}
-    initial={{ opacity: 0, scale: 0.5 }}
-    animate={{ opacity: 1, scale: 1 }}
-    exit={{ opacity: 0 }}
-    transition={{ delay: 0.3 }}
-  >
+const AnimatedCursor = ({ targetSelector }: { targetSelector?: string; rect: DOMRect }) => {
+  const [cursorRect, setCursorRect] = useState<DOMRect | null>(null);
+
+  useEffect(() => {
+    if (!targetSelector) return;
+    let attempts = 0;
+    const find = () => {
+      const el = document.querySelector(targetSelector);
+      if (el) {
+        setCursorRect(el.getBoundingClientRect());
+        return;
+      }
+      if (attempts < 10) {
+        attempts++;
+        setTimeout(find, 200);
+      }
+    };
+    find();
+  }, [targetSelector]);
+
+  const finalRect = targetSelector ? cursorRect : null;
+  if (!finalRect) return null;
+
+  return (
     <motion.div
-      animate={{
-        y: [0, 4, 0],
-        scale: [1, 0.9, 1],
+      className="fixed z-[203] pointer-events-none"
+      style={{
+        left: finalRect.left + finalRect.width * 0.5,
+        top: finalRect.top + finalRect.height * 0.5,
       }}
-      transition={{
-        duration: 1.4,
-        repeat: Infinity,
-        repeatDelay: 0.8,
-        ease: "easeInOut",
-      }}
+      initial={{ opacity: 0, scale: 0.5 }}
+      animate={{ opacity: 1, scale: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ delay: 0.3 }}
     >
-      <MousePointer2 className="w-7 h-7 text-primary drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 6px rgba(196,33,38,0.4))" }} />
+      <motion.div
+        animate={{
+          y: [0, 4, 0],
+          scale: [1, 0.9, 1],
+        }}
+        transition={{
+          duration: 1.4,
+          repeat: Infinity,
+          repeatDelay: 0.8,
+          ease: "easeInOut",
+        }}
+      >
+        <MousePointer2 className="w-7 h-7 text-primary drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 6px rgba(196,33,38,0.4))" }} />
+      </motion.div>
+      <motion.div
+        className="absolute top-0 left-0 w-6 h-6 rounded-full border-2 border-primary/60"
+        animate={{
+          scale: [0.5, 2.5],
+          opacity: [0.7, 0],
+        }}
+        transition={{
+          duration: 1,
+          repeat: Infinity,
+          repeatDelay: 1.2,
+          delay: 0.6,
+        }}
+      />
     </motion.div>
-    {/* Click ripple effect */}
-    <motion.div
-      className="absolute top-0 left-0 w-6 h-6 rounded-full border-2 border-primary/60"
-      animate={{
-        scale: [0.5, 2.5],
-        opacity: [0.7, 0],
-      }}
-      transition={{
-        duration: 1,
-        repeat: Infinity,
-        repeatDelay: 1.2,
-        delay: 0.6,
-      }}
-    />
-  </motion.div>
-);
+  );
+};
 
 const tourSteps: TourStep[] = [
   {
