@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Package, Car, FileText, DollarSign, RefreshCw, User, Calendar, Shield,
@@ -575,6 +575,18 @@ export const SlideAdminActivos = () => {
   const [selectedProcess, setSelectedProcess] = useState<string | null>(null);
   const activeProcess = topProcesses.find(p => p.id === selectedProcess);
 
+  // Listen for tour events to enter/exit sub-zoom
+  useEffect(() => {
+    const handleTourEnter = () => setSelectedProcess("activos");
+    const handleTourExit = () => setSelectedProcess(null);
+    window.addEventListener("tour:enter-activos", handleTourEnter);
+    window.addEventListener("tour:exit-activos", handleTourExit);
+    return () => {
+      window.removeEventListener("tour:enter-activos", handleTourEnter);
+      window.removeEventListener("tour:exit-activos", handleTourExit);
+    };
+  }, []);
+
   return (
     <div className="w-full max-w-6xl mx-auto">
       <AnimatePresence mode="wait">
@@ -624,7 +636,7 @@ export const SlideAdminActivos = () => {
             <CategoryLegend items={legendItems} />
           </motion.div>
         ) : (
-          <motion.div key="detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
+          <motion.div key="detail" data-tour="activos-detail" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.8 }} transition={{ duration: 0.5 }}>
             {activeProcess && (
               <>
                 <SubzoomHeader icon={activeProcess.icon} iconBg={activeProcess.iconBg} iconColor={activeProcess.iconColor} title={activeProcess.title} description={activeProcess.description} tag={activeProcess.tag} onBack={() => setSelectedProcess(null)} />

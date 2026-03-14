@@ -208,23 +208,6 @@ export const SlideIntro = () => {
         </svg>
       </SubZoomContainer>
 
-      {/* Clients carousel */}
-      <SubZoomContainer delay={2.0} direction="top" className="mt-1 overflow-hidden">
-        <p className="text-[10px] text-muted-foreground mb-2">{t("map.clients")}</p>
-        <div className="relative w-full overflow-hidden">
-          <motion.div
-            className="flex gap-8 whitespace-nowrap"
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 25, repeat: Infinity, ease: "linear" }}
-          >
-            {[...clients, ...clients].map((name, i) => (
-              <span key={`${name}-${i}`} className="text-xs font-bold text-foreground/40 flex-shrink-0">
-                {name}
-              </span>
-            ))}
-          </motion.div>
-        </div>
-      </SubZoomContainer>
     </div>
   );
 };
