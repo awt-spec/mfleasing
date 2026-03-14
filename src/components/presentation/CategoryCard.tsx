@@ -91,7 +91,7 @@ export const CategoryCard = ({
         >
           <ArrowRight className="w-4 h-4" />
         </motion.span>
-      </motion.button>
+      </motion.div>
     </motion.div>
   );
 };
