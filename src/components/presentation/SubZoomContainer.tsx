@@ -61,6 +61,7 @@ interface StaggerContainerProps {
   className?: string;
   staggerDelay?: number;
   initialDelay?: number;
+  dataTour?: string;
 }
 
 export const StaggerContainer = ({
@@ -68,10 +69,12 @@ export const StaggerContainer = ({
   className = "",
   staggerDelay = 0.1,
   initialDelay = 0.3,
+  dataTour,
 }: StaggerContainerProps) => {
   return (
     <motion.div
       className={className}
+      data-tour={dataTour}
       initial="hidden"
       animate="visible"
       variants={{
