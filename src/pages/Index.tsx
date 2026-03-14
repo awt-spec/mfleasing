@@ -147,6 +147,15 @@ const Index = () => {
     setCurrentSlide(0);
   }, []);
 
+  const handleTourNavigate = useCallback((slideIndex: number) => {
+    setCurrentSlide((prevSlide) => {
+      setDirection(slideIndex > prevSlide ? 1 : -1);
+      return slideIndex;
+    });
+    setActiveGate(null);
+    setPendingSlide(null);
+  }, []);
+
   const toggleFullscreen = useCallback(() => {
     if (!document.fullscreenElement) {
       document.documentElement.requestFullscreen();
@@ -244,10 +253,7 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
-      <GuidedTour onNavigate={(slideIndex) => {
-        setDirection(slideIndex > currentSlide ? 1 : -1);
-        setCurrentSlide(slideIndex);
-      }} />
+      <GuidedTour onNavigate={handleTourNavigate} />
       
       <NavigationControls
         onPrev={goPrev}
@@ -309,7 +315,7 @@ const Index = () => {
           />
         </div>
 
-        <div className="flex justify-between items-start px-4 py-4">
+        <div className="flex justify-between items-start px-4 py-4" data-tour="progress-points">
           {slideConfig.map((slide, index) => {
             const isActive = index === currentSlide;
             const isPast = index < currentSlide;
