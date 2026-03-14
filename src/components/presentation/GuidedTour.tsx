@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, ArrowRight, X, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, X, Check, MousePointer2 } from "lucide-react";
 import { useLanguage } from "@/contexts/LanguageContext";
 
 interface TourStep {
@@ -9,11 +9,56 @@ interface TourStep {
   descKey: string;
   position: "top" | "bottom" | "left" | "right";
   slideIndex?: number;
-  /** Custom event to dispatch when entering this step */
   dispatchOnEnter?: string;
-  /** Custom event to dispatch when leaving this step */
   dispatchOnLeave?: string;
+  /** Show animated click cursor on target */
+  showCursor?: boolean;
+  /** Selector for where the cursor should point (defaults to targetSelector) */
+  cursorTarget?: string;
 }
+
+const AnimatedCursor = ({ rect }: { rect: DOMRect }) => (
+  <motion.div
+    className="fixed z-[203] pointer-events-none"
+    style={{
+      left: rect.left + rect.width * 0.45,
+      top: rect.top + rect.height * 0.45,
+    }}
+    initial={{ opacity: 0, scale: 0.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    exit={{ opacity: 0 }}
+    transition={{ delay: 0.3 }}
+  >
+    <motion.div
+      animate={{
+        y: [0, 4, 0],
+        scale: [1, 0.9, 1],
+      }}
+      transition={{
+        duration: 1.4,
+        repeat: Infinity,
+        repeatDelay: 0.8,
+        ease: "easeInOut",
+      }}
+    >
+      <MousePointer2 className="w-7 h-7 text-primary drop-shadow-lg" style={{ filter: "drop-shadow(0 2px 6px rgba(196,33,38,0.4))" }} />
+    </motion.div>
+    {/* Click ripple effect */}
+    <motion.div
+      className="absolute top-0 left-0 w-6 h-6 rounded-full border-2 border-primary/60"
+      animate={{
+        scale: [0.5, 2.5],
+        opacity: [0.7, 0],
+      }}
+      transition={{
+        duration: 1,
+        repeat: Infinity,
+        repeatDelay: 1.2,
+        delay: 0.6,
+      }}
+    />
+  </motion.div>
+);
 
 const tourSteps: TourStep[] = [
   {
@@ -36,6 +81,7 @@ const tourSteps: TourStep[] = [
     descKey: "onboarding.tip3.desc",
     position: "top",
     slideIndex: 6,
+    showCursor: true,
   },
   {
     targetSelector: '[data-tour="activos-detail"]',
@@ -45,6 +91,7 @@ const tourSteps: TourStep[] = [
     slideIndex: 6,
     dispatchOnEnter: "tour:enter-activos",
     dispatchOnLeave: "tour:exit-activos",
+    showCursor: true,
   },
   {
     targetSelector: '[data-tour="nav-prev"]',
@@ -249,6 +296,11 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
             }}
             onClick={dismiss}
           />
+
+          {/* Animated click cursor */}
+          {currentStep.showCursor && targetRect && (
+            <AnimatedCursor rect={targetRect} />
+          )}
 
           <motion.div
             className="fixed z-[202] bg-card border border-border rounded-2xl shadow-2xl p-5 max-w-xs w-72"
