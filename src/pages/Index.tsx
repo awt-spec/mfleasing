@@ -19,7 +19,7 @@ import { SlideFormalizacion } from "@/components/presentation/slides/SlideFormal
 import { SlideAdminActivos } from "@/components/presentation/slides/SlideAdminActivos";
 import { SlideReportes } from "@/components/presentation/slides/SlideReportes";
 import { SlideClosing } from "@/components/presentation/slides/SlideClosing";
-import { OnboardingOverlay } from "@/components/presentation/OnboardingOverlay";
+import { GuidedTour } from "@/components/presentation/GuidedTour";
 
 // Slide configuration with components and label keys
 const slideConfig = [
@@ -244,7 +244,7 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
-      <OnboardingOverlay />
+      <GuidedTour />
       
       <NavigationControls
         onPrev={goPrev}
@@ -280,6 +280,7 @@ const Index = () => {
             }}
             className="min-h-screen"
             style={{ transformStyle: "preserve-3d" }}
+            data-tour="slide-content"
           >
             <Slide>
               <CurrentSlideComponent />
@@ -294,6 +295,7 @@ const Index = () => {
         initial={{ y: 100 }}
         animate={{ y: 0 }}
         transition={{ delay: 0.5 }}
+        data-tour="progress-bar"
       >
         <div className="relative h-1 bg-muted mx-16">
           <motion.div
