@@ -51,6 +51,7 @@ const Index = () => {
   const [activeGate, setActiveGate] = useState<number | null>(null);
   const [pendingSlide, setPendingSlide] = useState<number | null>(null);
   const [hasActiveOperation, setHasActiveOperation] = useState<boolean | null>(null);
+  const [tourActive, setTourActive] = useState(false);
   const allAnswers = useRef<Record<string, string>>({});
   const totalSlides = slideConfig.length;
 
