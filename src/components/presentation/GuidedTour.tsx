@@ -361,11 +361,14 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     setWaitingForSlide(false);
     setTargetRect(null);
     setStep(0);
-    setActive(false);
 
-    requestAnimationFrame(() => {
+    // Delay deactivation to let sub-views clean up before navigating
+    setTimeout(() => {
       goToSlide(0);
-    });
+      setTimeout(() => {
+        setActive(false);
+      }, 100);
+    }, 300);
   }, [goToSlide, step]);
 
   const next = useCallback(() => {
