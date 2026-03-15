@@ -303,20 +303,28 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     };
   }, [active, step, goToSlide]);
 
-  // Find target rect with retries
+  // Find target rect with retries + continuous polling to track position changes
   useEffect(() => {
     if (!active || waitingForSlide) return;
 
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
     let attempts = 0;
 
     const findRect = () => {
       const rect = getTargetRect(tourSteps[step].targetSelector);
       if (rect && rect.width > 0) {
         setTargetRect(rect);
+        // Keep polling to catch position changes from late animations
+        pollTimer = setInterval(() => {
+          const updated = getTargetRect(tourSteps[step].targetSelector);
+          if (updated) setTargetRect(updated);
+        }, 200);
+        // Stop polling after 2s (animations should be done)
+        setTimeout(() => { if (pollTimer) clearInterval(pollTimer); }, 2000);
         return;
       }
-      if (attempts < 15) {
+      if (attempts < 20) {
         attempts += 1;
         retryTimer = setTimeout(findRect, 150);
       }
@@ -333,6 +341,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
     return () => {
       if (retryTimer) clearTimeout(retryTimer);
+      if (pollTimer) clearInterval(pollTimer);
       window.removeEventListener("resize", onViewportChange);
       window.removeEventListener("scroll", onViewportChange);
     };
