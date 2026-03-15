@@ -172,12 +172,13 @@ const Index = () => {
       const isActive = detail?.active ?? false;
       setTourActive(isActive);
 
-      // Hard reset when tour ends/cancels so user always returns to Inicio
+      // When tour ends, ensure we're on slide 0 and clear any gate state
       if (!isActive) {
-        setDirection(-1);
-        setCurrentSlide(0);
-        setActiveGate(null);
-        setPendingSlide(null);
+        // Small delay to let the goToSlide(0) from dismiss settle first
+        setTimeout(() => {
+          setActiveGate(null);
+          setPendingSlide(null);
+        }, 50);
       }
     };
     window.addEventListener("tour:state", handleTourState);
