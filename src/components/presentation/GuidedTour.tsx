@@ -167,7 +167,7 @@ const tourSteps: TourStep[] = [
     position: "bottom",
     slideIndex: 6,
     dispatchOnEnter: "tour:enter-activos",
-    dispatchOnLeave: "tour:exit-activos",
+    // No dispatchOnLeave here — step 6 (contratos) still needs the activos view open
     showCursor: true,
     cursorTarget: '[data-tour="activos-sub-contratos"]',
   },
