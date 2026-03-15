@@ -290,9 +290,12 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
       }
     }, 400);
 
+    // Longer wait for steps that navigate to a different slide to let animations fully settle
+    const needsSlideNav = currentStepData.slideIndex !== undefined && currentStepData.slideIndex !== tourSteps[prevStepRef.current]?.slideIndex;
+    const baseDelay = needsSlideNav ? 1400 : 850;
     const timer = setTimeout(() => {
       setWaitingForSlide(false);
-    }, currentStepData.dispatchOnEnter ? 1200 : 850);
+    }, currentStepData.dispatchOnEnter ? 1600 : baseDelay);
 
     return () => {
       clearTimeout(timer);
@@ -300,20 +303,28 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     };
   }, [active, step, goToSlide]);
 
-  // Find target rect with retries
+  // Find target rect with retries + continuous polling to track position changes
   useEffect(() => {
     if (!active || waitingForSlide) return;
 
     let retryTimer: ReturnType<typeof setTimeout> | null = null;
+    let pollTimer: ReturnType<typeof setInterval> | null = null;
     let attempts = 0;
 
     const findRect = () => {
       const rect = getTargetRect(tourSteps[step].targetSelector);
       if (rect && rect.width > 0) {
         setTargetRect(rect);
+        // Keep polling to catch position changes from late animations
+        pollTimer = setInterval(() => {
+          const updated = getTargetRect(tourSteps[step].targetSelector);
+          if (updated) setTargetRect(updated);
+        }, 200);
+        // Stop polling after 2s (animations should be done)
+        setTimeout(() => { if (pollTimer) clearInterval(pollTimer); }, 2000);
         return;
       }
-      if (attempts < 15) {
+      if (attempts < 20) {
         attempts += 1;
         retryTimer = setTimeout(findRect, 150);
       }
@@ -330,6 +341,7 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
 
     return () => {
       if (retryTimer) clearTimeout(retryTimer);
+      if (pollTimer) clearInterval(pollTimer);
       window.removeEventListener("resize", onViewportChange);
       window.removeEventListener("scroll", onViewportChange);
     };
@@ -349,11 +361,14 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
     setWaitingForSlide(false);
     setTargetRect(null);
     setStep(0);
-    setActive(false);
 
-    requestAnimationFrame(() => {
+    // Delay deactivation to let sub-views clean up before navigating
+    setTimeout(() => {
       goToSlide(0);
-    });
+      setTimeout(() => {
+        setActive(false);
+      }, 100);
+    }, 300);
   }, [goToSlide, step]);
 
   const next = useCallback(() => {
