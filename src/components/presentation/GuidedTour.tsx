@@ -348,28 +348,23 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
   }, [active, step, waitingForSlide]);
 
   const dismiss = useCallback(() => {
-    // Dispatch leave event from current step
-    const currentStepData = tourSteps[step];
-    if (currentStepData?.dispatchOnLeave) {
-      window.dispatchEvent(new Event(currentStepData.dispatchOnLeave));
-    }
-
     // Ensure nested Activos views are always reset
     window.dispatchEvent(new Event("tour:exit-contratos"));
     window.dispatchEvent(new Event("tour:exit-activos"));
 
-    setWaitingForSlide(false);
-    setTargetRect(null);
-    setStep(0);
+    // Navigate to slide 0 first, then deactivate tour
+    goToSlide(0);
 
-    // Delay deactivation to let sub-views clean up before navigating
+    // Use a flag to prevent the step effect from re-triggering navigation
+    setWaitingForSlide(true);
+    setTargetRect(null);
+
     setTimeout(() => {
-      goToSlide(0);
-      setTimeout(() => {
-        setActive(false);
-      }, 100);
-    }, 300);
-  }, [goToSlide, step]);
+      setStep(0);
+      setWaitingForSlide(false);
+      setActive(false);
+    }, 400);
+  }, [goToSlide]);
 
   const next = useCallback(() => {
     if (step < tourSteps.length - 1) {
