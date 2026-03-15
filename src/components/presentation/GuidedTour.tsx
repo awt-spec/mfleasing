@@ -290,9 +290,12 @@ export const GuidedTour = ({ onNavigate }: GuidedTourProps) => {
       }
     }, 400);
 
+    // Longer wait for steps that navigate to a different slide to let animations fully settle
+    const needsSlideNav = currentStepData.slideIndex !== undefined && currentStepData.slideIndex !== tourSteps[prevStepRef.current]?.slideIndex;
+    const baseDelay = needsSlideNav ? 1400 : 850;
     const timer = setTimeout(() => {
       setWaitingForSlide(false);
-    }, currentStepData.dispatchOnEnter ? 1200 : 850);
+    }, currentStepData.dispatchOnEnter ? 1600 : baseDelay);
 
     return () => {
       clearTimeout(timer);
