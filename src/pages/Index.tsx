@@ -71,25 +71,10 @@ const Index = () => {
 
   const tryNavigate = useCallback((targetIndex: number) => {
     if (targetIndex < 0 || targetIndex >= totalSlides) return;
-
-    // If no active operation, skip gate 3 (system question) automatically
-    const gateId = SLIDE_TO_GATE[targetIndex];
-    if (gateId !== undefined && !completedGates.has(targetIndex)) {
-      if (gateId === 3 && hasActiveOperation === false) {
-        // Auto-complete: no active operation means no system either
-        setCompletedGates(prev => new Set(prev).add(targetIndex));
-        setDirection(targetIndex > currentSlide ? 1 : -1);
-        setCurrentSlide(targetIndex);
-        return;
-      }
-      setActiveGate(gateId);
-      setPendingSlide(targetIndex);
-      return;
-    }
-
+    // Tour and gate forms temporarily disabled — navigate directly
     setDirection(targetIndex > currentSlide ? 1 : -1);
     setCurrentSlide(targetIndex);
-  }, [totalSlides, currentSlide, completedGates, hasActiveOperation]);
+  }, [totalSlides, currentSlide]);
 
   const gateLabels: Record<number, string> = {
     0: "Datos de contacto",
@@ -275,26 +260,16 @@ const Index = () => {
     <div className="min-h-screen bg-background overflow-hidden relative">
       <BackgroundDecorations />
       <Header />
-      <GuidedTour onNavigate={handleTourNavigate} />
-      
-      <NavigationControls
-        onPrev={tourActive ? () => {} : goPrev}
-        onNext={tourActive ? () => {} : goNext}
-        onHome={tourActive ? () => {} : goHome}
-        onFullscreen={toggleFullscreen}
-        canGoPrev={currentSlide > 0 && !tourActive}
-        canGoNext={currentSlide < totalSlides - 1 && !tourActive}
-      />
+      {/* GuidedTour and GateForm temporarily hidden */}
 
-      {/* Gate Form Modal */}
-      {activeGate !== null && (
-        <GateForm
-          open={true}
-          onComplete={handleGateComplete}
-          gateId={activeGate}
-          hasActiveOperation={hasActiveOperation ?? true}
-        />
-      )}
+      <NavigationControls
+        onPrev={goPrev}
+        onNext={goNext}
+        onHome={goHome}
+        onFullscreen={toggleFullscreen}
+        canGoPrev={currentSlide > 0}
+        canGoNext={currentSlide < totalSlides - 1}
+      />
 
       <main className="relative z-10 perspective-container" style={{ perspective: "1200px" }}>
         <AnimatePresence mode="wait" custom={direction}>
